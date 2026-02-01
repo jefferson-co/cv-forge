@@ -140,7 +140,7 @@ const TemplatePage = () => {
             )}
             onClick={() => setSelectedTemplate(template.id)}
           >
-            <div className="aspect-[3/4] bg-secondary/30 relative">
+            <div className="aspect-[3/4] bg-white relative border-b">
               {getTemplatePreview(template.id)}
               {selectedTemplate === template.id && (
                 <div className="absolute top-2 right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
@@ -148,7 +148,7 @@ const TemplatePage = () => {
                 </div>
               )}
             </div>
-            <CardContent className="p-4">
+            <CardContent className="p-4 bg-card">
               <h3 className="font-semibold text-foreground">{template.name}</h3>
               <p className="text-sm text-muted-foreground">{template.description}</p>
             </CardContent>
