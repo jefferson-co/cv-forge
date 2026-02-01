@@ -1,8 +1,19 @@
 import { FileText, Target, Globe, Shield, Plus, ArrowRight, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const Dashboard = () => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success("Signed out successfully");
+    navigate("/");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
@@ -15,10 +26,13 @@ const Dashboard = () => {
             <span className="text-heading-sm font-semibold">CVCraft</span>
           </Link>
           <div className="flex items-center gap-4">
+            <span className="text-body-sm text-muted-foreground hidden sm:block">
+              {user?.user_metadata?.full_name || user?.email}
+            </span>
             <Button variant="ghost" size="icon">
               <User className="w-5 h-5" />
             </Button>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" onClick={handleSignOut}>
               <LogOut className="w-5 h-5" />
             </Button>
           </div>
