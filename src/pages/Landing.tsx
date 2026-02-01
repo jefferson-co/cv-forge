@@ -60,7 +60,7 @@ const Landing = () => {
       </section>
 
       {/* Features Grid */}
-      <section className="py-20 px-6 bg-secondary/50">
+      <section className="py-20 px-6 bg-white">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
             <h2 className="text-heading-lg font-bold text-foreground mb-4">
@@ -81,7 +81,7 @@ const Landing = () => {
       </section>
 
       {/* How it Works */}
-      <section className="py-20 px-6">
+      <section className="py-20 px-6 bg-white">
         <div className="container mx-auto max-w-5xl">
           <div className="text-center mb-16">
             <h2 className="text-heading-lg font-bold text-foreground mb-4">
