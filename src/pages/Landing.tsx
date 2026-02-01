@@ -29,7 +29,7 @@ const Landing = () => {
           <div className="animate-fade-up">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border mb-8 bg-[#212121] text-[#f90606]">
               <Sparkles className="w-4 h-4 text-accent" />
-              <span className="text-body-sm text-muted-foreground">AI-powered CV optimization</span>
+              <span className="font-serif font-thin text-xs text-white">AI-powered CV optimization</span>
             </div>
             
             <h1 className="text-display-lg font-bold text-foreground mb-6 text-balance">
