@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Upload, FileText, X, ArrowRight, ArrowLeft } from "lucide-react";
+import { Upload, FileText, X, ArrowRight, ArrowLeft, Loader2, CheckCircle } from "lucide-react";
 import { useTailorCV } from "@/contexts/TailorCVContext";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import CreateCVLayout from "@/components/create-cv/CreateCVLayout";
 import { toast } from "@/hooks/use-toast";
+import { parseCV, buildCVFormDataForAI } from "@/lib/cv-parser";
 
 const UploadPage = () => {
   const navigate = useNavigate();
@@ -15,13 +16,16 @@ const UploadPage = () => {
   const [jobDescription, setLocalJobDescription] = useState(data.jobDescription);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [isParsing, setIsParsing] = useState(false);
+  const [parsedText, setParsedText] = useState<string | null>(null);
+  const [parseError, setParseError] = useState<string | null>(null);
 
   const handleJobDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setLocalJobDescription(e.target.value);
     setJobDescription(e.target.value);
   };
 
-  const handleFileSelect = useCallback((file: File) => {
+  const handleFileSelect = useCallback(async (file: File) => {
     const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
     const maxSize = 10 * 1024 * 1024; // 10MB
 
@@ -44,6 +48,37 @@ const UploadPage = () => {
     }
 
     setSelectedFile(file);
+    setParseError(null);
+    setIsParsing(true);
+
+    try {
+      const { rawText } = await parseCV(file);
+      setParsedText(rawText);
+      
+      if (rawText.trim().length < 50) {
+        setParseError("Unable to extract meaningful content from this file. Please try a different file.");
+        toast({
+          title: "Parsing issue",
+          description: "The file appears to be empty or the content couldn't be extracted.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "CV parsed successfully",
+          description: `Extracted ${rawText.length} characters from your CV.`,
+        });
+      }
+    } catch (error) {
+      console.error('CV parsing error:', error);
+      setParseError(error instanceof Error ? error.message : "Failed to parse CV");
+      toast({
+        title: "Unable to read CV",
+        description: "Please try a different file format or version.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsParsing(false);
+    }
   }, []);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -75,6 +110,8 @@ const UploadPage = () => {
 
   const removeFile = () => {
     setSelectedFile(null);
+    setParsedText(null);
+    setParseError(null);
   };
 
   const formatFileSize = (bytes: number) => {
@@ -83,34 +120,17 @@ const UploadPage = () => {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
-  const canProceed = jobDescription.trim().length > 0 && selectedFile !== null;
+  const canProceed = jobDescription.trim().length > 0 && selectedFile !== null && parsedText !== null && !parseError && !isParsing;
 
   const handleAnalyze = () => {
-    if (!canProceed || !selectedFile) return;
+    if (!canProceed || !selectedFile || !parsedText) return;
     
-    // Store the file info - actual parsing happens in processing page
-    // For now, we'll pass the file via URL.createObjectURL
     const fileUrl = URL.createObjectURL(selectedFile);
     
-    // We'll parse the CV content in the processing page
-    setOriginalCV({
-      experienceLevel: 'experienced',
-      cvTitle: selectedFile.name.replace(/\.[^/.]+$/, ''),
-      fullName: '',
-      professionalTitle: '',
-      email: '',
-      phone: '',
-      location: '',
-      linkedinUrl: '',
-      portfolioUrl: '',
-      photoUrl: '',
-      summary: '',
-      education: [],
-      workExperience: [],
-      skills: [],
-      projects: [],
-      customSections: [],
-    }, selectedFile.name, fileUrl);
+    // Build CV form data with the parsed raw text for AI processing
+    const cvFormData = buildCVFormDataForAI(parsedText, selectedFile.name);
+    
+    setOriginalCV(cvFormData, selectedFile.name, fileUrl);
 
     navigate('/tailor-cv/processing');
   };
@@ -180,19 +200,42 @@ const UploadPage = () => {
                 />
               </div>
             ) : (
-              <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <FileText className="w-5 h-5 text-primary" />
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground">{selectedFile.name}</p>
+                      <p className="text-sm text-muted-foreground">{formatFileSize(selectedFile.size)}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-foreground">{selectedFile.name}</p>
-                    <p className="text-sm text-muted-foreground">{formatFileSize(selectedFile.size)}</p>
-                  </div>
+                  <Button variant="ghost" size="icon" onClick={removeFile} disabled={isParsing}>
+                    <X className="w-4 h-4" />
+                  </Button>
                 </div>
-                <Button variant="ghost" size="icon" onClick={removeFile}>
-                  <X className="w-4 h-4" />
-                </Button>
+                
+                {/* Parsing status */}
+                {isParsing && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground p-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Extracting content from your CV...</span>
+                  </div>
+                )}
+                
+                {parsedText && !parseError && !isParsing && (
+                  <div className="flex items-center gap-2 text-sm text-green-600 p-2">
+                    <CheckCircle className="w-4 h-4" />
+                    <span>CV content extracted ({parsedText.length} characters)</span>
+                  </div>
+                )}
+                
+                {parseError && (
+                  <div className="text-sm text-destructive p-2">
+                    {parseError}
+                  </div>
+                )}
               </div>
             )}
           </CardContent>
@@ -210,8 +253,17 @@ const UploadPage = () => {
             className="gap-2"
             size="lg"
           >
-            Analyze & Tailor CV
-            <ArrowRight className="w-4 h-4" />
+            {isParsing ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Parsing CV...
+              </>
+            ) : (
+              <>
+                Analyze & Tailor CV
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </Button>
         </div>
       </div>
