@@ -1,10 +1,8 @@
 import { FileText, Target, Globe, Shield, ArrowRight, Sparkles, CheckCircle, Upload, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-
 const Landing = () => {
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
@@ -29,7 +27,7 @@ const Landing = () => {
       <section className="pt-32 pb-20 px-6">
         <div className="container mx-auto max-w-5xl text-center">
           <div className="animate-fade-up">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border mb-8 bg-[#212121] text-[#f90606]">
               <Sparkles className="w-4 h-4 text-accent" />
               <span className="text-body-sm text-muted-foreground">AI-powered CV optimization</span>
             </div>
@@ -74,30 +72,10 @@ const Landing = () => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            <FeatureCard
-              icon={<FileText className="w-6 h-6" />}
-              title="Create from Scratch"
-              description="Guided form adapts to your experience level. AI generates a polished CV from your inputs."
-              features={["Dynamic questions by experience", "AI-powered generation", "Multiple templates"]}
-            />
-            <FeatureCard
-              icon={<Target className="w-6 h-6" />}
-              title="Tailor to Job"
-              description="Upload your CV and paste a job description. See exactly what changes were made and why."
-              features={["Side-by-side comparison", "Highlighted changes", "Keyword optimization"]}
-            />
-            <FeatureCard
-              icon={<Globe className="w-6 h-6" />}
-              title="Country Format"
-              description="Convert your CV to match specific country standards. Structure, sections, and length adjusted."
-              features={["Country-specific rules", "Professional templates", "One-click conversion"]}
-            />
-            <FeatureCard
-              icon={<Shield className="w-6 h-6" />}
-              title="ATS Check"
-              description="Get a detailed breakdown of how your CV performs against ATS systems."
-              features={["Compatibility score", "Keyword gaps", "Section-level feedback"]}
-            />
+            <FeatureCard icon={<FileText className="w-6 h-6" />} title="Create from Scratch" description="Guided form adapts to your experience level. AI generates a polished CV from your inputs." features={["Dynamic questions by experience", "AI-powered generation", "Multiple templates"]} />
+            <FeatureCard icon={<Target className="w-6 h-6" />} title="Tailor to Job" description="Upload your CV and paste a job description. See exactly what changes were made and why." features={["Side-by-side comparison", "Highlighted changes", "Keyword optimization"]} />
+            <FeatureCard icon={<Globe className="w-6 h-6" />} title="Country Format" description="Convert your CV to match specific country standards. Structure, sections, and length adjusted." features={["Country-specific rules", "Professional templates", "One-click conversion"]} />
+            <FeatureCard icon={<Shield className="w-6 h-6" />} title="ATS Check" description="Get a detailed breakdown of how your CV performs against ATS systems." features={["Compatibility score", "Keyword gaps", "Section-level feedback"]} />
           </div>
         </div>
       </section>
@@ -115,24 +93,9 @@ const Landing = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <ProcessStep
-              step="01"
-              title="Input"
-              description="Fill in your details or upload your existing CV along with a job description."
-              icon={<Upload className="w-5 h-5" />}
-            />
-            <ProcessStep
-              step="02"
-              title="Optimize"
-              description="AI suggests improvements with full explanations. You approve every change."
-              icon={<Sparkles className="w-5 h-5" />}
-            />
-            <ProcessStep
-              step="03"
-              title="Export"
-              description="Download your polished CV in PDF or Word format, ready to submit."
-              icon={<Download className="w-5 h-5" />}
-            />
+            <ProcessStep step="01" title="Input" description="Fill in your details or upload your existing CV along with a job description." icon={<Upload className="w-5 h-5" />} />
+            <ProcessStep step="02" title="Optimize" description="AI suggests improvements with full explanations. You approve every change." icon={<Sparkles className="w-5 h-5" />} />
+            <ProcessStep step="03" title="Export" description="Download your polished CV in PDF or Word format, ready to submit." icon={<Download className="w-5 h-5" />} />
           </div>
         </div>
       </section>
@@ -173,38 +136,31 @@ const Landing = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
-const FeatureCard = ({ 
-  icon, 
-  title, 
-  description, 
-  features 
-}: { 
-  icon: React.ReactNode; 
-  title: string; 
-  description: string; 
+const FeatureCard = ({
+  icon,
+  title,
+  description,
+  features
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
   features: string[];
-}) => (
-  <div className="bg-card rounded-xl p-8 border border-border shadow-sm hover:shadow-lg transition-shadow duration-300">
+}) => <div className="bg-card rounded-xl p-8 border border-border shadow-sm hover:shadow-lg transition-shadow duration-300">
     <div className="w-12 h-12 rounded-lg bg-accent/10 flex items-center justify-center text-accent mb-6">
       {icon}
     </div>
     <h3 className="text-heading-sm font-semibold text-foreground mb-3">{title}</h3>
     <p className="text-body text-muted-foreground mb-6">{description}</p>
     <ul className="space-y-2">
-      {features.map((feature, index) => (
-        <li key={index} className="flex items-center gap-2 text-body-sm text-foreground">
+      {features.map((feature, index) => <li key={index} className="flex items-center gap-2 text-body-sm text-foreground">
           <CheckCircle className="w-4 h-4 text-accent flex-shrink-0" />
           {feature}
-        </li>
-      ))}
+        </li>)}
     </ul>
-  </div>
-);
-
+  </div>;
 const ProcessStep = ({
   step,
   title,
@@ -215,15 +171,12 @@ const ProcessStep = ({
   title: string;
   description: string;
   icon: React.ReactNode;
-}) => (
-  <div className="text-center">
+}) => <div className="text-center">
     <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-accent/10 text-accent mb-6">
       {icon}
     </div>
     <div className="text-caption font-semibold text-accent mb-2">{step}</div>
     <h3 className="text-heading-sm font-semibold text-foreground mb-3">{title}</h3>
     <p className="text-body text-muted-foreground">{description}</p>
-  </div>
-);
-
+  </div>;
 export default Landing;
