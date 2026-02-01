@@ -1,4 +1,4 @@
-import { FileText, Target, Globe, Shield, ArrowRight, Sparkles, CheckCircle, Upload, Download } from "lucide-react";
+import { FileText, Target, Globe, Shield, ArrowRight, Sparkles, CheckCircle, Upload, Download, Feather } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 const Landing = () => {
@@ -7,10 +7,10 @@ const Landing = () => {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between bg-white text-black border-none shadow-sm">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#a82d00] text-white">
               <FileText className="w-4 h-4 text-accent-foreground" />
             </div>
-            <span className="text-heading-sm font-semibold">CVCraft</span>
+            <Feather className="text-heading-sm font-semibold bg-primary text-white">CVCraft</Feather>
           </Link>
           <div className="flex items-center gap-4">
             <Link to="/login">
