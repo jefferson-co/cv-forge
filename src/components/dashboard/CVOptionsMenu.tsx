@@ -13,7 +13,7 @@ const options: CVOption[] = [
     icon: <FileText className="w-5 h-5" />,
     title: "Create a CV from Scratch",
     description: "Start fresh with a guided form",
-    href: "/create",
+    href: "/create-cv",
   },
   {
     icon: <Target className="w-5 h-5" />,

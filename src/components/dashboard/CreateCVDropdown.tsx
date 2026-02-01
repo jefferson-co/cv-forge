@@ -20,7 +20,7 @@ export const CreateCVDropdown = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
         <DropdownMenuItem asChild className="cursor-pointer">
-          <Link to="/create" className="flex items-center gap-3 py-2">
+          <Link to="/create-cv" className="flex items-center gap-3 py-2">
             <FileText className="w-4 h-4 text-primary" />
             <div>
               <p className="font-medium">Create from Scratch</p>
