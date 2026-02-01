@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import CreateCVLayout from "@/components/create-cv/CreateCVLayout";
 import { toast } from "@/hooks/use-toast";
-import { parseCV, buildCVFormDataForAI } from "@/lib/cv-parser";
+import { parseCV, buildCVFormDataForAI, ParsedCVResult } from "@/lib/cv-parser";
 
 const UploadPage = () => {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ const UploadPage = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isParsing, setIsParsing] = useState(false);
-  const [parsedText, setParsedText] = useState<string | null>(null);
+  const [parsedResult, setParsedResult] = useState<ParsedCVResult | null>(null);
   const [parseError, setParseError] = useState<string | null>(null);
 
   const handleJobDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -49,13 +49,14 @@ const UploadPage = () => {
 
     setSelectedFile(file);
     setParseError(null);
+    setParsedResult(null);
     setIsParsing(true);
 
     try {
-      const { rawText } = await parseCV(file);
-      setParsedText(rawText);
+      const result = await parseCV(file);
+      setParsedResult(result);
       
-      if (rawText.trim().length < 50) {
+      if (result.rawText.trim().length < 50) {
         setParseError("Unable to extract meaningful content from this file. Please try a different file.");
         toast({
           title: "Parsing issue",
@@ -65,7 +66,7 @@ const UploadPage = () => {
       } else {
         toast({
           title: "CV parsed successfully",
-          description: `Extracted ${rawText.length} characters from your CV.`,
+          description: `Extracted ${result.rawText.length} characters from your CV.`,
         });
       }
     } catch (error) {
@@ -110,7 +111,7 @@ const UploadPage = () => {
 
   const removeFile = () => {
     setSelectedFile(null);
-    setParsedText(null);
+    setParsedResult(null);
     setParseError(null);
   };
 
@@ -120,15 +121,19 @@ const UploadPage = () => {
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
-  const canProceed = jobDescription.trim().length > 0 && selectedFile !== null && parsedText !== null && !parseError && !isParsing;
+  const canProceed = jobDescription.trim().length > 0 && selectedFile !== null && parsedResult !== null && !parseError && !isParsing;
 
   const handleAnalyze = () => {
-    if (!canProceed || !selectedFile || !parsedText) return;
+    if (!canProceed || !selectedFile || !parsedResult) return;
     
     const fileUrl = URL.createObjectURL(selectedFile);
     
     // Build CV form data with the parsed raw text for AI processing
-    const cvFormData = buildCVFormDataForAI(parsedText, selectedFile.name);
+    const cvFormData = buildCVFormDataForAI(
+      parsedResult.rawText,
+      parsedResult.fileName,
+      parsedResult.extractedInfo
+    );
     
     setOriginalCV(cvFormData, selectedFile.name, fileUrl);
 
@@ -224,10 +229,10 @@ const UploadPage = () => {
                   </div>
                 )}
                 
-                {parsedText && !parseError && !isParsing && (
+                {parsedResult && !parseError && !isParsing && (
                   <div className="flex items-center gap-2 text-sm text-green-600 p-2">
                     <CheckCircle className="w-4 h-4" />
-                    <span>CV content extracted ({parsedText.length} characters)</span>
+                    <span>CV content extracted ({parsedResult.rawText.length} characters)</span>
                   </div>
                 )}
                 
