@@ -80,7 +80,7 @@ const Signup = () => {
               <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
                 <FileText className="w-4 h-4 text-accent-foreground" />
               </div>
-              <span className="text-heading-sm font-semibold">CVCraft</span>
+              <span className="text-heading-sm font-semibold">Modiq</span>
             </Link>
             
             <h1 className="text-heading-lg font-bold text-foreground mb-2">
