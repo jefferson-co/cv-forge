@@ -27,7 +27,7 @@ export const CVPreviewModal = ({ isOpen, onClose, cv, onEdit }: CVPreviewModalPr
 
   const content = cv.content;
   const selectedCountry = (content as any).selectedCountry || 'US';
-  const photoCountries = ['NG', 'DE', 'FR'];
+  const photoCountries = ['DE', 'FR'];
   const shouldShowPhoto = photoCountries.includes(selectedCountry) && content.photoUrl;
 
   const generatePreviewContent = () => {
