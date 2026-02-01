@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FileText, Target, Globe, Shield, ArrowRight, Sparkles, CheckCircle, Upload, Download, Zap, BarChart3, FileCheck, Layout, Menu, X } from "lucide-react";
+import { FileText, Target, Globe, Shield, ArrowRight, Sparkles, CheckCircle, Upload, Download, Zap, BarChart3, FileCheck, Layout, Menu, X, Codepen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -23,7 +23,7 @@ const Landing = () => {
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <FileText className="w-4 h-4 text-primary-foreground" />
+              <Codepen className="w-4 h-4 text-primary-foreground" />
             </div>
             <span className="text-lg font-semibold text-foreground">Modiq</span>
           </Link>
