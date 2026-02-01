@@ -1,9 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+// Maximum input sizes
+const MAX_JOB_DESCRIPTION_LENGTH = 20000;
+const MAX_CV_CONTENT_LENGTH = 100000;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -11,18 +16,70 @@ serve(async (req) => {
   }
 
   try {
+    // Authentication check
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_ANON_KEY')!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      return new Response(
+        JSON.stringify({ error: "Invalid token" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const { jobDescription, originalCV } = await req.json();
 
-    if (!jobDescription) {
+    // Input validation
+    if (!jobDescription || typeof jobDescription !== 'string') {
       return new Response(
         JSON.stringify({ error: "Job description is required" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
+    if (jobDescription.length > MAX_JOB_DESCRIPTION_LENGTH) {
+      return new Response(
+        JSON.stringify({ error: `Job description too long (max ${MAX_JOB_DESCRIPTION_LENGTH.toLocaleString()} characters)` }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (!originalCV || typeof originalCV !== 'object') {
+      return new Response(
+        JSON.stringify({ error: "Original CV data is required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Validate CV content size
+    const cvContentString = JSON.stringify(originalCV);
+    if (cvContentString.length > MAX_CV_CONTENT_LENGTH) {
+      return new Response(
+        JSON.stringify({ error: "CV content too large. Please reduce content size." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+      console.error("LOVABLE_API_KEY is not configured");
+      return new Response(
+        JSON.stringify({ error: "Service configuration error. Please try again later." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const systemPrompt = `You are an expert CV parser and career coach. Your PRIMARY task is to EXTRACT ALL INFORMATION from the CV text and then tailor it for the job.
@@ -188,16 +245,22 @@ FINAL CHECK BEFORE RESPONDING:
           { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
-      throw new Error("AI service temporarily unavailable");
+      console.error("AI gateway error:", response.status);
+      return new Response(
+        JSON.stringify({ error: "AI service temporarily unavailable. Please try again." }),
+        { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const aiResponse = await response.json();
     const content = aiResponse.choices?.[0]?.message?.content;
 
     if (!content) {
-      throw new Error("No response from AI");
+      console.error("No content in AI response");
+      return new Response(
+        JSON.stringify({ error: "Failed to process CV. Please try again." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     // Parse the JSON response from AI
@@ -208,7 +271,7 @@ FINAL CHECK BEFORE RESPONDING:
       const jsonStr = jsonMatch ? jsonMatch[1].trim() : content.trim();
       parsedResponse = JSON.parse(jsonStr);
     } catch (parseError) {
-      console.error("Failed to parse AI response:", content);
+      console.error("Failed to parse AI response");
       
       // Return a fallback response with the original CV
       parsedResponse = {
@@ -235,9 +298,12 @@ FINAL CHECK BEFORE RESPONDING:
     );
 
   } catch (error) {
-    console.error("Tailor CV error:", error);
+    console.error("Tailor CV error:", {
+      error: error instanceof Error ? error.message : String(error),
+      timestamp: new Date().toISOString()
+    });
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ error: "An error occurred processing your request. Please try again." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

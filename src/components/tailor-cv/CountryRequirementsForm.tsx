@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface CountryRequirementsFormProps {
   requiresPhoto: boolean;
@@ -33,6 +34,7 @@ const CountryRequirementsForm = ({
 }: CountryRequirementsFormProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user } = useAuth();
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -50,10 +52,16 @@ const CountryRequirementsForm = ({
       return;
     }
 
+    if (!user?.id) {
+      toast.error('You must be logged in to upload photos');
+      return;
+    }
+
     setIsUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      // Use user-specific folder for storage policy compliance
+      const fileName = `${user.id}/${crypto.randomUUID()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('cv-photos')
