@@ -3,23 +3,51 @@ import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } fro
 import { saveAs } from 'file-saver';
 import { CVFormData } from '@/types/cv';
 
-// ATS-optimized PDF generation
-export const generatePDF = (formData: CVFormData): void => {
+// ATS-optimized PDF generation with optional photo support
+export const generatePDF = async (formData: CVFormData, includePhoto: boolean = false): Promise<void> => {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 20;
-  const maxWidth = pageWidth - margin * 2;
+  let maxWidth = pageWidth - margin * 2;
   let y = 20;
+  let headerXOffset = margin;
+
+  // If photo should be included, add it to the top right
+  if (includePhoto && formData.photoUrl) {
+    try {
+      // Load the image
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = formData.photoUrl;
+      });
+      
+      // Add photo to top right (35x45mm passport size)
+      const photoWidth = 35;
+      const photoHeight = 45;
+      const photoX = pageWidth - margin - photoWidth;
+      doc.addImage(img, 'JPEG', photoX, y, photoWidth, photoHeight);
+      
+      // Adjust max width for header section to not overlap photo
+      maxWidth = pageWidth - margin * 2 - photoWidth - 5;
+    } catch (error) {
+      console.error('Failed to load photo for PDF:', error);
+      // Continue without photo if loading fails
+    }
+  }
 
   // Helper function to add text with word wrap (ATS-friendly plain text)
-  const addText = (text: string, fontSize: number, isBold: boolean = false, align: 'left' | 'center' = 'left') => {
+  const addText = (text: string, fontSize: number, isBold: boolean = false, align: 'left' | 'center' = 'left', customMaxWidth?: number) => {
     doc.setFontSize(fontSize);
     doc.setFont('helvetica', isBold ? 'bold' : 'normal');
     
     // Clean text for ATS - remove special characters that might confuse parsers
     const cleanText = text.replace(/[^\w\s.,;:()@\-+/|•]/g, '');
     
-    const lines = doc.splitTextToSize(cleanText, maxWidth);
+    const effectiveMaxWidth = customMaxWidth || maxWidth;
+    const lines = doc.splitTextToSize(cleanText, effectiveMaxWidth);
     lines.forEach((line: string) => {
       if (y > 280) {
         doc.addPage();
@@ -28,7 +56,7 @@ export const generatePDF = (formData: CVFormData): void => {
       if (align === 'center') {
         doc.text(line, pageWidth / 2, y, { align: 'center' });
       } else {
-        doc.text(line, margin, y);
+        doc.text(line, headerXOffset, y);
       }
       y += fontSize * 0.5;
     });
@@ -40,23 +68,33 @@ export const generatePDF = (formData: CVFormData): void => {
     doc.setDrawColor(0, 0, 0);
     doc.line(margin, y, pageWidth - margin, y);
     y += 5;
+    headerXOffset = margin; // Reset offset for body content
+    maxWidth = pageWidth - margin * 2; // Reset max width
     addText(title.toUpperCase(), 12, true);
     y += 2;
   };
 
   // Header - Name prominently at top (ATS best practice)
-  addText(formData.fullName.toUpperCase(), 18, true, 'center');
+  // If photo is included, align header to left to not overlap
+  const headerAlign = includePhoto && formData.photoUrl ? 'left' : 'center';
+  addText(formData.fullName.toUpperCase(), 18, true, headerAlign);
   y += 2;
-  addText(formData.professionalTitle, 12, false, 'center');
+  addText(formData.professionalTitle, 12, false, headerAlign);
   y += 2;
   
   // Contact info on single line (ATS-friendly format)
   const contactParts = [formData.email, formData.phone, formData.location].filter(Boolean);
-  addText(contactParts.join(' | '), 10, false, 'center');
+  addText(contactParts.join(' | '), 10, false, headerAlign);
   
   if (formData.linkedinUrl || formData.portfolioUrl) {
     const links = [formData.linkedinUrl, formData.portfolioUrl].filter(Boolean);
-    addText(links.join(' | '), 9, false, 'center');
+    addText(links.join(' | '), 9, false, headerAlign);
+  }
+  
+  // Reset to full width after header section
+  if (includePhoto && formData.photoUrl) {
+    y = Math.max(y, 70); // Ensure we're below the photo
+    maxWidth = pageWidth - margin * 2;
   }
 
   // Professional Summary (ATS keyword-rich section)

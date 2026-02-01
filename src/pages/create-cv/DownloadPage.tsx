@@ -24,6 +24,10 @@ const DownloadPage = () => {
 
   const countryData = COUNTRIES.find(c => c.code === selectedCountry);
   const templateData = TEMPLATES.find(t => t.id === selectedTemplate);
+  
+  // Countries that expect photos on CVs
+  const photoCountries = ['NG', 'DE', 'FR'];
+  const shouldIncludePhoto = photoCountries.includes(selectedCountry) && !!formData.photoUrl;
 
   const generateCVContent = () => {
     // Simple text-based CV format
@@ -81,7 +85,7 @@ ${formData.customSections.map(s => `${s.name.toUpperCase()}\n${s.content}`).join
   const handleDownloadPDF = async () => {
     setIsDownloading(true);
     try {
-      generatePDF(formData);
+      await generatePDF(formData, shouldIncludePhoto);
       setHasDownloaded(true);
       
       if (saveToAccount) {
@@ -212,6 +216,16 @@ ${formData.customSections.map(s => `${s.name.toUpperCase()}\n${s.content}`).join
                 </Button>
               </div>
               <div className="bg-white border rounded-lg p-8 min-h-[400px] font-mono text-sm whitespace-pre-wrap overflow-auto max-h-[500px]">
+                {/* Show photo for countries that expect it */}
+                {shouldIncludePhoto && (
+                  <div className="flex justify-end mb-4">
+                    <img 
+                      src={formData.photoUrl} 
+                      alt="Profile" 
+                      className="w-24 h-32 object-cover border rounded"
+                    />
+                  </div>
+                )}
                 {generateCVContent()}
               </div>
             </CardContent>

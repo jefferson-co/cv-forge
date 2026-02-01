@@ -34,6 +34,7 @@ Phone: ${formData.phone}
 Location: ${formData.location}
 ${formData.linkedinUrl ? `LinkedIn: ${formData.linkedinUrl}` : ''}
 ${formData.portfolioUrl ? `Portfolio: ${formData.portfolioUrl}` : ''}
+${formData.photoUrl ? `Photo: [Profile photo included]` : ''}
 
 Summary: ${formData.summary}
 
@@ -50,7 +51,7 @@ ${formData.projects.map(p => `- ${p.title}: ${p.description}`).join('\n')}` : ''
 
 ${formData.customSections.length > 0 ? formData.customSections.map(s => `${s.name}:\n${s.content}`).join('\n\n') : ''}
 
-Return a clean, formatted version of this CV optimized for ${COUNTRIES.find(c => c.code === selectedCountry)?.name || 'US'} job applications.`,
+Return a clean, formatted version of this CV optimized for ${COUNTRIES.find(c => c.code === selectedCountry)?.name || 'US'} job applications. ${['NG', 'DE', 'FR'].includes(selectedCountry) && formData.photoUrl ? 'This country expects a photo on the CV - include a placeholder note for the photo position.' : ''}`,
             type: 'preview'
           }
         });
@@ -148,6 +149,16 @@ ${formData.projects.map(p => `${p.title}${p.role ? ` (${p.role})` : ''}\n${p.des
               <Card className="lg:col-span-2">
                 <CardContent className="p-6">
                   <div className="bg-white border rounded-lg p-8 min-h-[600px] font-mono text-sm whitespace-pre-wrap">
+                    {/* Show photo for countries that expect it */}
+                    {['NG', 'DE', 'FR'].includes(country.code) && formData.photoUrl && (
+                      <div className="flex justify-end mb-4">
+                        <img 
+                          src={formData.photoUrl} 
+                          alt="Profile" 
+                          className="w-24 h-32 object-cover border rounded"
+                        />
+                      </div>
+                    )}
                     {cvContent}
                   </div>
                 </CardContent>

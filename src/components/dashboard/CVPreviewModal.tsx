@@ -26,6 +26,9 @@ export const CVPreviewModal = ({ isOpen, onClose, cv, onEdit }: CVPreviewModalPr
   if (!cv || !cv.content) return null;
 
   const content = cv.content;
+  const selectedCountry = (content as any).selectedCountry || 'US';
+  const photoCountries = ['NG', 'DE', 'FR'];
+  const shouldShowPhoto = photoCountries.includes(selectedCountry) && content.photoUrl;
 
   const generatePreviewContent = () => {
     return `${content.fullName || 'Name not provided'}
@@ -85,6 +88,16 @@ ${content.customSections?.length > 0
 
         <ScrollArea className="flex-1 min-h-0">
           <div className="bg-white border rounded-lg p-8 font-mono text-sm whitespace-pre-wrap">
+            {/* Show photo for countries that expect it */}
+            {shouldShowPhoto && (
+              <div className="flex justify-end mb-4">
+                <img 
+                  src={content.photoUrl} 
+                  alt="Profile" 
+                  className="w-24 h-32 object-cover border rounded"
+                />
+              </div>
+            )}
             {generatePreviewContent()}
           </div>
         </ScrollArea>
