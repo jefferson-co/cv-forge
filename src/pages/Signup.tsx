@@ -3,18 +3,38 @@ import { FileText, Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { signUp } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement signup with Supabase
-    console.log("Signup:", { name, email, password });
+    
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters");
+      return;
+    }
+
+    setIsLoading(true);
+
+    const { error } = await signUp(email, password, name);
+
+    if (error) {
+      toast.error(error.message);
+      setIsLoading(false);
+    } else {
+      toast.success("Check your email to confirm your account!");
+      navigate("/login");
+    }
   };
 
   return (
@@ -112,9 +132,9 @@ const Signup = () => {
               </p>
             </div>
 
-            <Button type="submit" variant="accent" size="lg" className="w-full">
-              Create account
-              <ArrowRight className="w-4 h-4" />
+            <Button type="submit" variant="accent" size="lg" className="w-full" disabled={isLoading}>
+              {isLoading ? "Creating account..." : "Create account"}
+              {!isLoading && <ArrowRight className="w-4 h-4" />}
             </Button>
           </form>
 
