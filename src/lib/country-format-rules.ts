@@ -1,9 +1,9 @@
 // Countries that require or commonly expect a photo
-export const PHOTO_REQUIRED_COUNTRIES = ['NG', 'DE', 'FR'];
+export const PHOTO_REQUIRED_COUNTRIES = ['DE', 'FR'];
 export const PHOTO_OPTIONAL_COUNTRIES = ['NL'];
 
 // Countries that typically expect date of birth
-export const DOB_EXPECTED_COUNTRIES = ['NG', 'DE', 'FR'];
+export const DOB_EXPECTED_COUNTRIES = ['DE', 'FR'];
 
 // Country-specific formatting rules
 export interface CountryFormatRules {
@@ -17,12 +17,12 @@ export interface CountryFormatRules {
 
 export const COUNTRY_FORMAT_RULES: Record<string, CountryFormatRules> = {
   NG: {
-    includePhoto: true,
-    includeDOB: true,
+    includePhoto: false,
+    includeDOB: false,
     maxPages: 2,
     includeReferences: true,
     dateFormat: 'DD/MM/YYYY',
-    sectionOrder: ['personal', 'summary', 'education', 'experience', 'skills', 'references']
+    sectionOrder: ['summary', 'experience', 'education', 'skills', 'references']
   },
   US: {
     includePhoto: false,

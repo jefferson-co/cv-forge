@@ -76,7 +76,7 @@ export interface CountryFormat {
 }
 
 export const COUNTRIES: CountryFormat[] = [
-  { code: 'NG', name: 'Nigeria', flag: '🇳🇬', notes: ['Photos often expected', 'Include date of birth'] },
+  { code: 'NG', name: 'Nigeria', flag: '🇳🇬', notes: ['No photo needed', 'Two pages standard', 'Include references'] },
   { code: 'US', name: 'USA', flag: '🇺🇸', notes: ['No photo', 'One page preferred', 'No personal details'] },
   { code: 'CA', name: 'Canada', flag: '🇨🇦', notes: ['Similar to US format', 'Two pages acceptable'] },
   { code: 'GB', name: 'UK', flag: '🇬🇧', notes: ['Two pages standard', 'No photo needed'] },
