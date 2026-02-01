@@ -34,9 +34,9 @@
     --muted: 154 40% 92%;
     --muted-foreground: 334 17% 37%;
 
-    /* Accent - Teal for CTAs and highlights */
-    --accent: 4 54% 91%;
-    --accent-foreground: 4 54% 20%;
+    /* Accent - Brand orange for CTAs and highlights */
+    --accent: 16 100% 33%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 76% 90%;
     --destructive-foreground: 0 63% 31%;
