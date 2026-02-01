@@ -17,40 +17,76 @@ const ComparisonPage = () => {
   const generateCVText = (cv: typeof data.originalCVContent) => {
     if (!cv) return 'No content available';
     
-    return `${cv.fullName || 'Name not provided'}
-${cv.professionalTitle || ''}
-${[cv.email, cv.phone, cv.location].filter(Boolean).join(' | ')}
-${cv.linkedinUrl ? `LinkedIn: ${cv.linkedinUrl}` : ''}
-${cv.portfolioUrl ? `Portfolio: ${cv.portfolioUrl}` : ''}
+    // Helper to safely get date range
+    const getDateRange = (item: any) => {
+      // Handle AI format (year/duration) or form format (startDate/endDate)
+      if (item.duration) return item.duration;
+      if (item.year) return item.year;
+      const start = item.startDate || '';
+      const end = item.isCurrentlyStudying || item.isCurrentlyWorking ? 'Present' : (item.endDate || '');
+      if (!start && !end) return '';
+      return `${start}${start && end ? ' - ' : ''}${end}`;
+    };
 
-PROFESSIONAL SUMMARY
-${cv.summary || 'No summary provided'}
+    // Helper to get description/responsibilities
+    const getDescription = (item: any) => {
+      return item.responsibilities || item.description || '';
+    };
+    
+    const lines = [
+      cv.fullName || 'Name not provided',
+      cv.professionalTitle || '',
+      [cv.email, cv.phone, cv.location].filter(Boolean).join(' | '),
+      cv.linkedinUrl ? `LinkedIn: ${cv.linkedinUrl}` : '',
+      cv.portfolioUrl ? `Portfolio: ${cv.portfolioUrl}` : '',
+      '',
+      'PROFESSIONAL SUMMARY',
+      cv.summary || 'No summary provided',
+      '',
+      'EDUCATION',
+    ];
 
-EDUCATION
-${cv.education?.length > 0 
-  ? cv.education.map(e => 
-      `${e.degree}
-${e.institution}${e.location ? `, ${e.location}` : ''}
-${e.startDate} - ${e.isCurrentlyStudying ? 'Present' : e.endDate}`
-    ).join('\n\n')
-  : 'No education entries'}
+    if (cv.education?.length > 0) {
+      cv.education.forEach((e: any) => {
+        lines.push(e.degree || 'Degree not specified');
+        lines.push(`${e.institution || 'Institution not specified'}${e.location ? `, ${e.location}` : ''}`);
+        const dateRange = getDateRange(e);
+        if (dateRange) lines.push(dateRange);
+        if (e.description) lines.push(e.description);
+        lines.push('');
+      });
+    } else {
+      lines.push('No education entries');
+    }
 
-${cv.workExperience?.length > 0 ? `WORK EXPERIENCE
-${cv.workExperience.map(w => 
-  `${w.jobTitle}
-${w.company}${w.location ? `, ${w.location}` : ''}
-${w.startDate} - ${w.isCurrentlyWorking ? 'Present' : w.endDate}
-${w.responsibilities}`
-).join('\n\n')}` : ''}
+    if (cv.workExperience?.length > 0) {
+      lines.push('WORK EXPERIENCE');
+      cv.workExperience.forEach((w: any) => {
+        lines.push(w.jobTitle || w.title || 'Position not specified');
+        lines.push(`${w.company || 'Company not specified'}${w.location ? `, ${w.location}` : ''}`);
+        const dateRange = getDateRange(w);
+        if (dateRange) lines.push(dateRange);
+        const desc = getDescription(w);
+        if (desc) lines.push(desc);
+        lines.push('');
+      });
+    }
 
-SKILLS
-${cv.skills?.length > 0 ? cv.skills.join(' • ') : 'No skills listed'}
+    lines.push('SKILLS');
+    lines.push(cv.skills?.length > 0 ? cv.skills.join(' • ') : 'No skills listed');
 
-${cv.projects?.length > 0 ? `PROJECTS
-${cv.projects.map(p => 
-  `${p.title}${p.role ? ` - ${p.role}` : ''}${p.date ? ` (${p.date})` : ''}
-${p.description}`
-).join('\n\n')}` : ''}`;
+    if (cv.projects?.length > 0) {
+      lines.push('');
+      lines.push('PROJECTS');
+      cv.projects.forEach((p: any) => {
+        const title = p.title || p.name || 'Project';
+        lines.push(`${title}${p.role ? ` - ${p.role}` : ''}${p.date ? ` (${p.date})` : ''}`);
+        if (p.description) lines.push(p.description);
+        lines.push('');
+      });
+    }
+
+    return lines.filter(line => line !== undefined).join('\n');
   };
 
   const getChangeIcon = (type: string) => {
