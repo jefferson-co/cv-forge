@@ -48,6 +48,7 @@ interface TailorCVContextType {
   setSelectedCountry: (country: string) => void;
   setSelectedTemplate: (template: string) => void;
   setCustomName: (name: string) => void;
+  updateTailoredCVField: (field: keyof CVFormData, value: any) => void;
   resetTailorData: () => void;
 }
 
@@ -116,6 +117,15 @@ export const TailorCVProvider = ({ children }: { children: ReactNode }) => {
     setData(prev => ({ ...prev, customName: name }));
   };
 
+  const updateTailoredCVField = (field: keyof CVFormData, value: any) => {
+    setData(prev => ({
+      ...prev,
+      tailoredCVContent: prev.tailoredCVContent 
+        ? { ...prev.tailoredCVContent, [field]: value }
+        : null
+    }));
+  };
+
   const resetTailorData = () => {
     setData(initialData);
   };
@@ -133,6 +143,7 @@ export const TailorCVProvider = ({ children }: { children: ReactNode }) => {
       setSelectedCountry,
       setSelectedTemplate,
       setCustomName,
+      updateTailoredCVField,
       resetTailorData,
     }}>
       {children}
