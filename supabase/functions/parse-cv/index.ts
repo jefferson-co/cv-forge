@@ -26,10 +26,18 @@ serve(async (req) => {
     let extractedText = "";
 
     if (fileType === "application/pdf") {
-      // For PDFs, we'll use the AI to extract text since we can't use pdfjs in Deno easily
-      // Instead, read the file as base64 and send to AI for extraction
+      // For PDFs, we'll use the AI to extract text
       const arrayBuffer = await file.arrayBuffer();
-      const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+      const uint8Array = new Uint8Array(arrayBuffer);
+      
+      // Convert to base64 in chunks to avoid stack overflow
+      let base64 = "";
+      const chunkSize = 32768; // 32KB chunks
+      for (let i = 0; i < uint8Array.length; i += chunkSize) {
+        const chunk = uint8Array.slice(i, i + chunkSize);
+        base64 += String.fromCharCode.apply(null, Array.from(chunk));
+      }
+      base64 = btoa(base64);
       
       const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
       if (!LOVABLE_API_KEY) {
