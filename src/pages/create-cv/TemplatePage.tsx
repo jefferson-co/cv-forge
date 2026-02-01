@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
 import { useCVForm } from "@/contexts/CVFormContext";
@@ -9,107 +8,26 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
+// Import template preview images
+import modernTemplate from "@/assets/templates/modern-template.png";
+import classicTemplate from "@/assets/templates/classic-template.png";
+import minimalTemplate from "@/assets/templates/minimal-template.png";
+import executiveTemplate from "@/assets/templates/executive-template.png";
+import creativeTemplate from "@/assets/templates/creative-template.png";
+import technicalTemplate from "@/assets/templates/technical-template.png";
+
+const templateImages: Record<string, string> = {
+  modern: modernTemplate,
+  classic: classicTemplate,
+  minimal: minimalTemplate,
+  executive: executiveTemplate,
+  creative: creativeTemplate,
+  technical: technicalTemplate,
+};
+
 const TemplatePage = () => {
   const navigate = useNavigate();
-  const { selectedCountry, selectedTemplate, setSelectedTemplate, formData } = useCVForm();
-
-  const getTemplatePreview = (templateId: string) => {
-    // Generate a simple visual representation based on template type
-    switch (templateId) {
-      case 'modern':
-        return (
-          <div className="space-y-2 p-4">
-            <div className="flex gap-4">
-              <div className="w-1/3 space-y-2">
-                <div className="h-3 bg-primary/20 rounded" />
-                <div className="h-2 bg-muted rounded w-3/4" />
-                <div className="h-2 bg-muted rounded w-1/2" />
-                <div className="mt-4 space-y-1">
-                  <div className="h-2 bg-primary/30 rounded w-full" />
-                  <div className="h-2 bg-primary/30 rounded w-full" />
-                </div>
-              </div>
-              <div className="w-2/3 space-y-2">
-                <div className="h-4 bg-primary rounded w-2/3" />
-                <div className="h-2 bg-muted rounded w-full" />
-                <div className="h-2 bg-muted rounded w-full" />
-                <div className="h-2 bg-muted rounded w-3/4" />
-              </div>
-            </div>
-          </div>
-        );
-      case 'classic':
-        return (
-          <div className="space-y-2 p-4">
-            <div className="text-center space-y-1">
-              <div className="h-4 bg-foreground/80 rounded w-1/2 mx-auto" />
-              <div className="h-2 bg-muted rounded w-1/3 mx-auto" />
-            </div>
-            <div className="border-t border-border my-2" />
-            <div className="space-y-1">
-              <div className="h-2 bg-muted rounded" />
-              <div className="h-2 bg-muted rounded" />
-              <div className="h-2 bg-muted rounded w-3/4" />
-            </div>
-          </div>
-        );
-      case 'minimal':
-        return (
-          <div className="space-y-3 p-6">
-            <div className="h-3 bg-foreground/80 rounded w-1/3" />
-            <div className="h-2 bg-muted rounded w-2/3" />
-            <div className="h-2 bg-muted rounded w-full" />
-            <div className="h-2 bg-muted rounded w-1/2" />
-          </div>
-        );
-      case 'executive':
-        return (
-          <div className="space-y-2 p-4">
-            <div className="border-2 border-foreground/20 p-3 rounded">
-              <div className="h-4 bg-foreground/80 rounded w-1/2" />
-              <div className="h-2 bg-muted rounded w-1/3 mt-1" />
-            </div>
-            <div className="space-y-1 mt-2">
-              <div className="h-2 bg-muted rounded" />
-              <div className="h-2 bg-muted rounded w-5/6" />
-            </div>
-          </div>
-        );
-      case 'creative':
-        return (
-          <div className="p-4">
-            <div className="flex gap-3">
-              <div className="w-8 h-8 rounded-full bg-primary/30" />
-              <div className="flex-1 space-y-1">
-                <div className="h-3 bg-primary rounded w-1/2" />
-                <div className="h-2 bg-muted rounded w-1/3" />
-              </div>
-            </div>
-            <div className="mt-3 space-y-1">
-              <div className="h-2 bg-muted rounded" />
-              <div className="h-2 bg-muted rounded w-4/5" />
-            </div>
-          </div>
-        );
-      case 'technical':
-        return (
-          <div className="space-y-2 p-4 font-mono">
-            <div className="flex gap-2 text-xs">
-              <div className="h-3 bg-primary/20 rounded px-2 w-12" />
-              <div className="h-3 bg-primary/20 rounded px-2 w-16" />
-              <div className="h-3 bg-primary/20 rounded px-2 w-10" />
-            </div>
-            <div className="h-3 bg-foreground/80 rounded w-2/3" />
-            <div className="space-y-1">
-              <div className="h-2 bg-muted rounded" />
-              <div className="h-2 bg-muted rounded w-5/6" />
-            </div>
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
+  const { selectedTemplate, setSelectedTemplate } = useCVForm();
 
   return (
     <CreateCVLayout backTo="/create-cv/preview">
@@ -140,8 +58,12 @@ const TemplatePage = () => {
             )}
             onClick={() => setSelectedTemplate(template.id)}
           >
-            <div className="aspect-[3/4] bg-white relative border-b">
-              {getTemplatePreview(template.id)}
+            <div className="aspect-[3/4] bg-white relative border-b overflow-hidden">
+              <img 
+                src={templateImages[template.id]} 
+                alt={`${template.name} template preview`}
+                className="w-full h-full object-cover object-top"
+              />
               {selectedTemplate === template.id && (
                 <div className="absolute top-2 right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
                   <Check className="w-4 h-4 text-primary-foreground" />
