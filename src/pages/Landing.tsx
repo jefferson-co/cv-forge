@@ -24,7 +24,7 @@ const Landing = () => {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
+      <section className="pt-32 pb-20 px-6 bg-white text-black">
         <div className="container mx-auto max-w-5xl text-center">
           <div className="animate-fade-up">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-border mb-8 bg-[#212121] text-[#f90606]">
