@@ -34,7 +34,7 @@ const Landing = () => {
             
             <h1 className="text-display-lg mb-6 text-balance text-[#121212] font-serif text-center font-semibold">
               Craft CVs that land
-              <span className="text-accent"> interviews</span>
+              <span className="text-[#a82d00] font-serif text-center font-semibold"> interviews</span>
             </h1>
             
             <p className="text-body-lg text-muted-foreground max-w-2xl mx-auto mb-10">
