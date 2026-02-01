@@ -217,13 +217,13 @@ const CountryPage = () => {
       </div>
 
       <Tabs value={data.selectedCountry} onValueChange={setSelectedCountry} className="mb-8">
-        <ScrollArea className="w-full">
-          <TabsList className="inline-flex h-auto p-1 w-max min-w-full justify-start">
+        <div className="overflow-x-auto pb-2">
+          <TabsList className="inline-flex h-auto p-1 w-max gap-1">
             {COUNTRIES.map((country) => (
               <TabsTrigger 
                 key={country.code} 
                 value={country.code}
-                className="px-4 py-2 gap-2 whitespace-nowrap"
+                className="px-4 py-2 gap-2 whitespace-nowrap flex-shrink-0"
               >
                 <span>{country.flag}</span>
                 <span className="hidden sm:inline">{country.name}</span>
@@ -233,7 +233,7 @@ const CountryPage = () => {
               </TabsTrigger>
             ))}
           </TabsList>
-        </ScrollArea>
+        </div>
 
         {COUNTRIES.map((country) => {
           const countryRules = getCountryFormatRules(country.code);
