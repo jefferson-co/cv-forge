@@ -14,6 +14,80 @@ export type Database = {
   }
   public: {
     Tables: {
+      cv_tailoring_jobs: {
+        Row: {
+          changes_made: Json | null
+          company_name: string | null
+          created_at: string
+          custom_name: string | null
+          docx_url: string | null
+          id: string
+          job_description: string
+          job_title: string | null
+          keywords_added: string[] | null
+          match_score: number | null
+          original_cv_content: Json | null
+          original_cv_file_url: string | null
+          original_cv_id: string | null
+          pdf_url: string | null
+          selected_country: string | null
+          selected_template: string | null
+          tailored_cv_content: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          changes_made?: Json | null
+          company_name?: string | null
+          created_at?: string
+          custom_name?: string | null
+          docx_url?: string | null
+          id?: string
+          job_description: string
+          job_title?: string | null
+          keywords_added?: string[] | null
+          match_score?: number | null
+          original_cv_content?: Json | null
+          original_cv_file_url?: string | null
+          original_cv_id?: string | null
+          pdf_url?: string | null
+          selected_country?: string | null
+          selected_template?: string | null
+          tailored_cv_content?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          changes_made?: Json | null
+          company_name?: string | null
+          created_at?: string
+          custom_name?: string | null
+          docx_url?: string | null
+          id?: string
+          job_description?: string
+          job_title?: string | null
+          keywords_added?: string[] | null
+          match_score?: number | null
+          original_cv_content?: Json | null
+          original_cv_file_url?: string | null
+          original_cv_id?: string | null
+          pdf_url?: string | null
+          selected_country?: string | null
+          selected_template?: string | null
+          tailored_cv_content?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cv_tailoring_jobs_original_cv_id_fkey"
+            columns: ["original_cv_id"]
+            isOneToOne: false
+            referencedRelation: "cvs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cvs: {
         Row: {
           ats_score: number | null
