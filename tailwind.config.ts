@@ -63,22 +63,45 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      fontFamily: {
+        sans: [
+          "Inter",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "Roboto",
+          "Oxygen",
+          "Ubuntu",
+          "sans-serif",
+        ],
+      },
+      fontSize: {
+        "display-xl": ["4.5rem", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
+        "display-lg": ["3.75rem", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
+        "display": ["3rem", { lineHeight: "1.2", letterSpacing: "-0.02em" }],
+        "heading-lg": ["2.25rem", { lineHeight: "1.25", letterSpacing: "-0.01em" }],
+        "heading": ["1.875rem", { lineHeight: "1.3", letterSpacing: "-0.01em" }],
+        "heading-sm": ["1.5rem", { lineHeight: "1.35" }],
+        "body-lg": ["1.125rem", { lineHeight: "1.6" }],
+        "body": ["1rem", { lineHeight: "1.6" }],
+        "body-sm": ["0.875rem", { lineHeight: "1.5" }],
+        "caption": ["0.75rem", { lineHeight: "1.4" }],
+      },
+      boxShadow: {
+        "sm": "var(--shadow-sm)",
+        "md": "var(--shadow-md)",
+        "lg": "var(--shadow-lg)",
+        "xl": "var(--shadow-xl)",
+        "glow": "var(--shadow-glow)",
+      },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
       },
       animation: {
