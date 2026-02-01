@@ -76,57 +76,57 @@ serve(async (req) => {
       extractedText = aiResponse.choices?.[0]?.message?.content || "";
 
     } else if (fileType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
-      // For DOCX, extract text using basic XML parsing
+      // DOCX is a ZIP file containing XML - we need to extract text from document.xml
       const arrayBuffer = await file.arrayBuffer();
       
-      // DOCX is a ZIP file containing XML
-      // We'll use AI to extract text from it as well
-      const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+      // Use fflate to unzip the DOCX
+      const { unzipSync } = await import("https://esm.sh/fflate@0.8.2");
       
-      const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-      if (!LOVABLE_API_KEY) {
-        throw new Error("LOVABLE_API_KEY is not configured");
+      try {
+        const uint8Array = new Uint8Array(arrayBuffer);
+        const unzipped = unzipSync(uint8Array);
+        
+        // Find and read word/document.xml
+        const documentXml = unzipped["word/document.xml"];
+        if (!documentXml) {
+          throw new Error("Invalid DOCX: no document.xml found");
+        }
+        
+        // Decode the XML content
+        const decoder = new TextDecoder();
+        const xmlContent = decoder.decode(documentXml);
+        
+        // Extract text from XML by removing tags and cleaning up
+        // Match all <w:t> tags which contain the actual text
+        const textMatches = xmlContent.match(/<w:t[^>]*>([^<]*)<\/w:t>/g) || [];
+        const paragraphBreaks = xmlContent.match(/<w:p[^>]*>/g) || [];
+        
+        // Build text with proper spacing
+        let rawText = "";
+        let lastWasParagraph = false;
+        
+        // Simple approach: extract all text nodes and add newlines for paragraphs
+        const allContent = xmlContent
+          .replace(/<w:p[^>]*\/>/g, "\n") // Self-closing paragraphs
+          .replace(/<w:p[^>]*>/g, "\n") // Paragraph starts
+          .replace(/<w:br[^>]*>/g, "\n") // Line breaks
+          .replace(/<w:tab[^>]*>/g, "\t") // Tabs
+          .replace(/<w:t[^>]*>([^<]*)<\/w:t>/g, "$1") // Extract text
+          .replace(/<[^>]+>/g, "") // Remove remaining XML tags
+          .replace(/&amp;/g, "&")
+          .replace(/&lt;/g, "<")
+          .replace(/&gt;/g, ">")
+          .replace(/&quot;/g, '"')
+          .replace(/&apos;/g, "'")
+          .replace(/\n\s*\n\s*\n/g, "\n\n") // Clean up extra newlines
+          .trim();
+        
+        extractedText = allContent;
+        
+      } catch (unzipError) {
+        console.error("DOCX unzip error:", unzipError);
+        throw new Error("Failed to parse DOCX file. The file may be corrupted.");
       }
-
-      // For DOCX, we'll try to parse it or use AI
-      // Since Deno doesn't have mammoth, we'll use a simpler approach
-      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
-          messages: [
-            {
-              role: "user",
-              content: [
-                {
-                  type: "text",
-                  text: "Extract ALL text content from this CV/resume document. Return ONLY the raw text, preserving the structure and sections. Include all contact information, work experience, education, skills, projects, and any other content. Do not add any commentary or formatting - just the extracted text."
-                },
-                {
-                  type: "image_url",
-                  image_url: {
-                    url: `data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,${base64}`
-                  }
-                }
-              ]
-            }
-          ],
-          temperature: 0.1,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("AI extraction error:", response.status, errorText);
-        throw new Error("Failed to extract text from DOCX");
-      }
-
-      const aiResponse = await response.json();
-      extractedText = aiResponse.choices?.[0]?.message?.content || "";
     } else {
       return new Response(
         JSON.stringify({ error: "Unsupported file type. Please upload a PDF or DOCX file." }),
