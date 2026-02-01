@@ -1,9 +1,19 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
+
+// Maximum file size: 10MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+// Allowed MIME types
+const ALLOWED_TYPES = [
+  "application/pdf",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+];
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -11,6 +21,30 @@ serve(async (req) => {
   }
 
   try {
+    // Authentication check
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_ANON_KEY')!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      return new Response(
+        JSON.stringify({ error: "Invalid token" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const formData = await req.formData();
     const file = formData.get("file") as File;
 
@@ -21,8 +55,25 @@ serve(async (req) => {
       );
     }
 
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+      return new Response(
+        JSON.stringify({ error: "File too large. Maximum size is 10MB." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const fileType = file.type;
     const fileName = file.name;
+
+    // Validate file type
+    if (!ALLOWED_TYPES.includes(fileType)) {
+      return new Response(
+        JSON.stringify({ error: "Unsupported file type. Please upload a PDF or DOCX file." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     let extractedText = "";
 
     if (fileType === "application/pdf") {
@@ -41,7 +92,11 @@ serve(async (req) => {
       
       const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
       if (!LOVABLE_API_KEY) {
-        throw new Error("LOVABLE_API_KEY is not configured");
+        console.error("LOVABLE_API_KEY is not configured");
+        return new Response(
+          JSON.stringify({ error: "Service configuration error. Please try again later." }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
       }
 
       // Use AI with vision to extract text from PDF
@@ -75,9 +130,11 @@ serve(async (req) => {
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("AI extraction error:", response.status, errorText);
-        throw new Error("Failed to extract text from PDF");
+        console.error("AI extraction error:", response.status);
+        return new Response(
+          JSON.stringify({ error: "Failed to process document. Please try again." }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
       }
 
       const aiResponse = await response.json();
@@ -97,7 +154,10 @@ serve(async (req) => {
         // Find and read word/document.xml
         const documentXml = unzipped["word/document.xml"];
         if (!documentXml) {
-          throw new Error("Invalid DOCX: no document.xml found");
+          return new Response(
+            JSON.stringify({ error: "Invalid document format. Please upload a valid DOCX file." }),
+            { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
         }
         
         // Decode the XML content
@@ -105,14 +165,6 @@ serve(async (req) => {
         const xmlContent = decoder.decode(documentXml);
         
         // Extract text from XML by removing tags and cleaning up
-        // Match all <w:t> tags which contain the actual text
-        const textMatches = xmlContent.match(/<w:t[^>]*>([^<]*)<\/w:t>/g) || [];
-        const paragraphBreaks = xmlContent.match(/<w:p[^>]*>/g) || [];
-        
-        // Build text with proper spacing
-        let rawText = "";
-        let lastWasParagraph = false;
-        
         // Simple approach: extract all text nodes and add newlines for paragraphs
         const allContent = xmlContent
           .replace(/<w:p[^>]*\/>/g, "\n") // Self-closing paragraphs
@@ -132,14 +184,12 @@ serve(async (req) => {
         extractedText = allContent;
         
       } catch (unzipError) {
-        console.error("DOCX unzip error:", unzipError);
-        throw new Error("Failed to parse DOCX file. The file may be corrupted.");
+        console.error("DOCX parsing error:", unzipError);
+        return new Response(
+          JSON.stringify({ error: "Failed to parse document. The file may be corrupted." }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
       }
-    } else {
-      return new Response(
-        JSON.stringify({ error: "Unsupported file type. Please upload a PDF or DOCX file." }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
     }
 
     // Extract basic info from text
@@ -167,9 +217,12 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error("Parse CV error:", error);
+    console.error("Parse CV error:", {
+      error: error instanceof Error ? error.message : String(error),
+      timestamp: new Date().toISOString()
+    });
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Failed to parse CV" }),
+      JSON.stringify({ error: "An error occurred processing your document. Please try again." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
