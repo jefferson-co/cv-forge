@@ -69,7 +69,7 @@ ${p.description}
 ${p.link ? `Link: ${p.link}` : ''}`
 ).join('\n\n')}` : ''}
 
-${cv.customSections?.map(s => `${s.name.toUpperCase()}\n${s.content}`).join('\n\n') || ''}`;
+${cv.customSections?.filter(s => s && s.name).map(s => `${s.name.toUpperCase()}\n${s.content || ''}`).join('\n\n') || ''}`;
   };
 
   const handleDownloadPDF = async () => {
