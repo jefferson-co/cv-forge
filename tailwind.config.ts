@@ -65,20 +65,17 @@ export default {
   		},
   		fontFamily: {
   			sans: [
-  				'Space Grotesk',
+  				'Montserrat',
   				'ui-sans-serif',
   				'system-ui',
-  				'-apple-system',
-  				'BlinkMacSystemFont',
-  				'Segoe UI',
-  				'Roboto',
-  				'Helvetica Neue',
-  				'Arial',
-  				'Noto Sans',
-  				'sans-serif'
+  				'sans-serif',
+  				'Apple Color Emoji',
+  				'Segoe UI Emoji',
+  				'Segoe UI Symbol',
+  				'Noto Color Emoji'
   			],
   			serif: [
-  				'Lora',
+  				'Playfair Display',
   				'ui-serif',
   				'Georgia',
   				'Cambria',
@@ -87,7 +84,7 @@ export default {
   				'serif'
   			],
   			mono: [
-  				'Space Mono',
+  				'JetBrains Mono',
   				'ui-monospace',
   				'SFMono-Regular',
   				'Menlo',
@@ -113,7 +110,7 @@ export default {
   					letterSpacing: '-0.02em'
   				}
   			],
-  			'display': [
+  			display: [
   				'3rem',
   				{
   					lineHeight: '1.2',
@@ -127,7 +124,7 @@ export default {
   					letterSpacing: '-0.01em'
   				}
   			],
-  			'heading': [
+  			heading: [
   				'1.875rem',
   				{
   					lineHeight: '1.3',
@@ -146,7 +143,7 @@ export default {
   					lineHeight: '1.6'
   				}
   			],
-  			'body': [
+  			body: [
   				'1rem',
   				{
   					lineHeight: '1.6'
@@ -158,7 +155,7 @@ export default {
   					lineHeight: '1.5'
   				}
   			],
-  			'caption': [
+  			caption: [
   				'0.75rem',
   				{
   					lineHeight: '1.4'
@@ -166,17 +163,13 @@ export default {
   			]
   		},
   		boxShadow: {
-  			'sm': 'var(--shadow-sm)',
-  			'md': 'var(--shadow-md)',
-  			'lg': 'var(--shadow-lg)',
-  			'xl': 'var(--shadow-xl)',
-  			'glow': 'var(--shadow-glow)',
-  			'2xs': 'var(--shadow-2xs)',
-  			xs: 'var(--shadow-xs)',
   			sm: 'var(--shadow-sm)',
   			md: 'var(--shadow-md)',
   			lg: 'var(--shadow-lg)',
   			xl: 'var(--shadow-xl)',
+  			glow: 'var(--shadow-glow)',
+  			'2xs': 'var(--shadow-2xs)',
+  			xs: 'var(--shadow-xs)',
   			'2xl': 'var(--shadow-2xl)'
   		},
   		keyframes: {
