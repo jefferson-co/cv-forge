@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Check, Loader2 } from "lucide-react";
 import { useCVForm } from "@/contexts/CVFormContext";
 import CreateCVLayout from "@/components/create-cv/CreateCVLayout";
@@ -13,11 +13,47 @@ import ProjectsSection from "@/components/create-cv/form/ProjectsSection";
 import CustomSectionsSection from "@/components/create-cv/form/CustomSectionsSection";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { CVFormData } from "@/types/cv";
 
 const FormPage = () => {
   const navigate = useNavigate();
-  const { formData, saveDraft, isSaving, lastSaved } = useCVForm();
+  const [searchParams] = useSearchParams();
+  const { formData, setFormData, saveDraft, isSaving, lastSaved } = useCVForm();
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const editId = searchParams.get('edit');
+
+  // Load existing CV data when editing
+  useEffect(() => {
+    const loadCV = async () => {
+      if (editId) {
+        setIsLoading(true);
+        try {
+          const { data, error } = await supabase
+            .from('cvs')
+            .select('content')
+            .eq('id', editId)
+            .single();
+
+          if (data?.content && !error) {
+            setFormData(data.content as unknown as CVFormData);
+          }
+        } catch (error) {
+          console.error('Error loading CV:', error);
+          toast({
+            title: "Error loading CV",
+            description: "Could not load the CV data.",
+            variant: "destructive",
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    loadCV();
+  }, [editId, setFormData]);
 
   // Auto-save every 30 seconds
   useEffect(() => {
@@ -64,8 +100,21 @@ const FormPage = () => {
     navigate('/dashboard');
   };
 
+  if (isLoading) {
+    return (
+      <CreateCVLayout showBackButton={false}>
+        <div className="flex flex-col items-center justify-center min-h-[60vh]">
+          <Loader2 className="w-12 h-12 text-primary animate-spin mb-6" />
+          <h2 className="text-2xl font-semibold text-foreground mb-2">
+            Loading your CV...
+          </h2>
+        </div>
+      </CreateCVLayout>
+    );
+  }
+
   return (
-    <CreateCVLayout backTo="/create-cv">
+    <CreateCVLayout backTo={editId ? "/dashboard" : "/create-cv"}>
       <ProgressIndicator 
         currentStep={1} 
         totalSteps={3} 

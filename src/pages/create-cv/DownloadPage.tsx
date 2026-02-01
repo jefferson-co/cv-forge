@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
+import { generatePDF, generateDOCX } from "@/lib/cv-generator";
 
 const DownloadPage = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const DownloadPage = () => {
   const [saveToAccount, setSaveToAccount] = useState(true);
   const [hasDownloaded, setHasDownloaded] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const countryData = COUNTRIES.find(c => c.code === selectedCountry);
   const templateData = TEMPLATES.find(t => t.id === selectedTemplate);
@@ -77,35 +79,55 @@ ${formData.customSections.map(s => `${s.name.toUpperCase()}\n${s.content}`).join
   };
 
   const handleDownloadPDF = async () => {
-    const content = generateCVContent();
-    // For now, download as text - in production, this would generate actual PDF
-    downloadFile(content, `${formData.fullName.replace(/\s+/g, '_')}_CV.txt`, 'text/plain');
-    setHasDownloaded(true);
-    
-    if (saveToAccount) {
-      await saveCV();
+    setIsDownloading(true);
+    try {
+      generatePDF(formData);
+      setHasDownloaded(true);
+      
+      if (saveToAccount) {
+        await saveCV();
+      }
+      
+      toast({
+        title: "CV Downloaded!",
+        description: "Your CV has been downloaded as PDF.",
+      });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDownloading(false);
     }
-    
-    toast({
-      title: "CV Downloaded!",
-      description: "Your CV has been downloaded successfully.",
-    });
   };
 
   const handleDownloadDOCX = async () => {
-    const content = generateCVContent();
-    // For now, download as text - in production, this would generate actual DOCX
-    downloadFile(content, `${formData.fullName.replace(/\s+/g, '_')}_CV.txt`, 'text/plain');
-    setHasDownloaded(true);
-    
-    if (saveToAccount) {
-      await saveCV();
+    setIsDownloading(true);
+    try {
+      await generateDOCX(formData);
+      setHasDownloaded(true);
+      
+      if (saveToAccount) {
+        await saveCV();
+      }
+      
+      toast({
+        title: "CV Downloaded!",
+        description: "Your CV has been downloaded as Word document.",
+      });
+    } catch (error) {
+      console.error('Error generating DOCX:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate Word document. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDownloading(false);
     }
-    
-    toast({
-      title: "CV Downloaded!",
-      description: "Your CV has been downloaded successfully.",
-    });
   };
 
   const saveCV = async () => {
@@ -197,13 +219,13 @@ ${formData.customSections.map(s => `${s.name.toUpperCase()}\n${s.content}`).join
 
           {/* Download Options */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-            <Button size="lg" onClick={handleDownloadPDF} className="gap-2">
+            <Button size="lg" onClick={handleDownloadPDF} disabled={isDownloading} className="gap-2">
               <FileDown className="w-5 h-5" />
-              Download as PDF
+              {isDownloading ? 'Generating...' : 'Download as PDF'}
             </Button>
-            <Button size="lg" variant="outline" onClick={handleDownloadDOCX} className="gap-2">
+            <Button size="lg" variant="outline" onClick={handleDownloadDOCX} disabled={isDownloading} className="gap-2">
               <FileText className="w-5 h-5" />
-              Download as Word
+              {isDownloading ? 'Generating...' : 'Download as Word'}
             </Button>
           </div>
 

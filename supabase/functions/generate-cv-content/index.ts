@@ -19,11 +19,11 @@ serve(async (req) => {
     }
 
     const systemPrompts: Record<string, string> = {
-      summary: "You are a professional CV writer. Generate concise, impactful professional summaries. Keep responses under 500 characters. Write in third person or neutral tone. Focus on value proposition and career highlights.",
-      experience: "You are a professional CV writer. Improve job responsibilities to be more impactful. Use strong action verbs and quantifiable achievements. Format as bullet points using • symbol. Keep each point concise but meaningful.",
-      skills: "You are a career advisor. Suggest relevant skills based on the given context. Return only a comma-separated list of skill names, no explanations or numbering.",
-      project: "You are a professional CV writer. Improve project descriptions to highlight technical skills, problem-solving, and impact. Keep it to 2-3 concise sentences.",
-      preview: "You are a professional CV formatter. Format the given CV data in a clean, professional style. Maintain all the information provided but organize it clearly."
+      summary: "You are a professional CV writer. Generate concise, impactful professional summaries. Keep responses under 500 characters. Write in third person or neutral tone. Focus on value proposition and career highlights. Do NOT use any markdown formatting like ** or #.",
+      experience: "You are a professional CV writer. Improve job responsibilities to be more impactful. Use strong action verbs and quantifiable achievements. Format as bullet points using • symbol. Keep each point concise but meaningful. Do NOT use any markdown formatting like ** or #.",
+      skills: "You are a career advisor. Suggest relevant skills based on the given context. Return only a comma-separated list of skill names, no explanations or numbering. Do NOT use any markdown formatting.",
+      project: "You are a professional CV writer. Improve project descriptions to highlight technical skills, problem-solving, and impact. Keep it to 2-3 concise sentences. Do NOT use any markdown formatting like ** or #.",
+      preview: "You are a professional CV formatter. Format the given CV data in a clean, professional style. Maintain all the information provided but organize it clearly. IMPORTANT: Do NOT use any markdown formatting like **, ##, or any special characters. Use plain text only with clear section headers in UPPERCASE."
     };
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {

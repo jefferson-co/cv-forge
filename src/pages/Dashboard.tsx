@@ -14,7 +14,9 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { EmptyState } from "@/components/dashboard/EmptyState";
 import { CreateCVDropdown } from "@/components/dashboard/CreateCVDropdown";
+import { CVPreviewModal } from "@/components/dashboard/CVPreviewModal";
 import { format } from "date-fns";
+import { CVFormData } from "@/types/cv";
 
 interface CV {
   id: string;
@@ -23,6 +25,7 @@ interface CV {
   ats_score: number | null;
   created_at: string;
   updated_at: string;
+  content: CVFormData | null;
 }
 
 const Dashboard = () => {
@@ -31,6 +34,8 @@ const Dashboard = () => {
   const [fullName, setFullName] = useState<string | null>(null);
   const [cvs, setCvs] = useState<CV[]>([]);
   const [loadingCvs, setLoadingCvs] = useState(true);
+  const [selectedCV, setSelectedCV] = useState<CV | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -61,13 +66,29 @@ const Dashboard = () => {
           .order('updated_at', { ascending: false });
         
         if (!error && data) {
-          setCvs(data);
+          // Cast the content field properly
+          const typedCvs: CV[] = data.map(cv => ({
+            ...cv,
+            content: cv.content as unknown as CVFormData | null,
+          }));
+          setCvs(typedCvs);
         }
         setLoadingCvs(false);
       }
     };
     fetchCvs();
   }, [user]);
+
+  const handleCVClick = (cv: CV) => {
+    setSelectedCV(cv);
+    setIsPreviewOpen(true);
+  };
+
+  const handleEditCV = (cvId: string) => {
+    setIsPreviewOpen(false);
+    // Navigate to form with the CV data
+    navigate(`/create-cv/form?edit=${cvId}`);
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -166,7 +187,7 @@ const Dashboard = () => {
                   <h2 className="text-xl font-semibold text-foreground">Your CVs</h2>
                   <div className="grid gap-4">
                     {cvs.slice(0, 5).map((cv) => (
-                      <CVCard key={cv.id} cv={cv} />
+                      <CVCard key={cv.id} cv={cv} onClick={() => handleCVClick(cv)} />
                     ))}
                   </div>
                   {cvs.length > 5 && (
@@ -225,11 +246,18 @@ const Dashboard = () => {
           )}
         </div>
       </main>
+
+      <CVPreviewModal
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        cv={selectedCV}
+        onEdit={handleEditCV}
+      />
     </div>
   );
 };
 
-const CVCard = ({ cv }: { cv: CV }) => {
+const CVCard = ({ cv, onClick }: { cv: CV; onClick: () => void }) => {
   const typeLabels: Record<string, string> = {
     scratch: "From Scratch",
     tailored: "Tailored",
@@ -237,7 +265,10 @@ const CVCard = ({ cv }: { cv: CV }) => {
   };
 
   return (
-    <div className="bg-card rounded-xl border border-border p-5 hover:border-primary/30 transition-colors">
+    <div 
+      className="bg-card rounded-xl border border-border p-5 hover:border-primary/30 transition-colors cursor-pointer"
+      onClick={onClick}
+    >
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-4">
           <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
