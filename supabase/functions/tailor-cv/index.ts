@@ -50,15 +50,24 @@ Return a JSON response with:
 4. matchScore: 0-100 score of how well the CV matches
 5. keywordsAdded: Array of keywords added from job description`;
 
+    // The raw CV text is passed in the summary field from the parser
+    const rawCVText = originalCV.summary || JSON.stringify(originalCV, null, 2);
+    
     const userPrompt = `Analyze this job description and tailor the CV accordingly.
 
 JOB DESCRIPTION:
 ${jobDescription}
 
-ORIGINAL CV DATA:
-${JSON.stringify(originalCV, null, 2)}
+ORIGINAL CV (RAW TEXT EXTRACTED FROM PDF/DOCX):
+${rawCVText}
 
-Return your response as a valid JSON object with this structure:
+ADDITIONAL EXTRACTED INFO:
+- Name: ${originalCV.fullName || 'Not detected'}
+- Email: ${originalCV.email || 'Not detected'}
+- Phone: ${originalCV.phone || 'Not detected'}
+- LinkedIn: ${originalCV.linkedinUrl || 'Not detected'}
+
+Parse the raw CV text above and return your response as a valid JSON object with this structure:
 {
   "jobAnalysis": {
     "jobTitle": "extracted job title",
@@ -71,30 +80,48 @@ Return your response as a valid JSON object with this structure:
     "roleType": "technical/managerial/creative/etc"
   },
   "tailoredCV": {
-    // Same structure as original CV but with tailored content
-    "fullName": "...",
-    "professionalTitle": "...",
-    "email": "...",
-    "phone": "...",
-    "location": "...",
-    "linkedinUrl": "...",
-    "portfolioUrl": "...",
-    "photoUrl": "...",
-    "summary": "tailored summary emphasizing relevant experience",
-    "education": [...],
-    "workExperience": [...with enhanced bullet points...],
-    "skills": [...reordered and enhanced...],
-    "projects": [...],
-    "customSections": [...]
+    "fullName": "extracted from CV",
+    "professionalTitle": "tailored to job",
+    "email": "from CV",
+    "phone": "from CV",
+    "location": "from CV",
+    "linkedinUrl": "from CV",
+    "portfolioUrl": "from CV if present",
+    "photoUrl": "",
+    "summary": "tailored professional summary emphasizing relevant experience for this role",
+    "education": [
+      {
+        "degree": "degree name",
+        "institution": "school name",
+        "year": "graduation year",
+        "description": "relevant details"
+      }
+    ],
+    "workExperience": [
+      {
+        "jobTitle": "position title",
+        "company": "company name",
+        "duration": "date range",
+        "description": "tailored bullet points highlighting relevant achievements"
+      }
+    ],
+    "skills": ["skill1", "skill2", "...prioritized by relevance to job"],
+    "projects": [
+      {
+        "name": "project name",
+        "description": "tailored description"
+      }
+    ],
+    "customSections": []
   },
   "changes": [
     {
       "id": "change_1",
       "type": "modify",
       "section": "summary",
-      "before": "original text",
+      "before": "original text from CV",
       "after": "modified text",
-      "explanation": "Enhanced to highlight leadership experience mentioned in job requirements"
+      "explanation": "Why this change improves the match"
     }
   ],
   "matchScore": 85,
