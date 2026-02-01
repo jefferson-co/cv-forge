@@ -159,8 +159,8 @@ const Landing = () => {
             Ready to land more interviews?
           </h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
-            Join thousands of job seekers who've improved their CVs and advanced their careers with CVCraft.
-          </p>
+          Join thousands of job seekers who've improved their CVs and advanced their careers with Modiq.
+        </p>
           <Link to="/signup">
             <Button size="lg" className="gap-2">
               Get Started Free
@@ -180,7 +180,7 @@ const Landing = () => {
                 <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                   <FileText className="w-4 h-4 text-primary-foreground" />
                 </div>
-                <span className="text-lg font-semibold">CVCraft</span>
+                <span className="text-lg font-semibold">Modiq</span>
               </div>
               <p className="text-sm text-background/60">
                 AI-powered CV builder helping you land your dream job.
