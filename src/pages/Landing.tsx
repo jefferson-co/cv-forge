@@ -1,14 +1,10 @@
-import { useState } from "react";
-import { FileText, Target, Globe, Shield, ArrowRight, Sparkles, CheckCircle, Upload, Download, Zap, BarChart3, FileCheck, Layout } from "lucide-react";
+import { ArrowRight, Sparkles, CheckCircle, Upload, Download, Zap, BarChart3, FileCheck, Layout, Target, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
 const Landing = () => {
-  const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
-
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -33,16 +29,13 @@ const Landing = () => {
               AI-powered analysis gives you the edge you need to land more interviews.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex items-center justify-center">
               <Link to="/signup">
                 <Button size="lg" className="gap-2">
                   Build New CV
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
-              <Button variant="outline" size="lg" onClick={() => setIsOptionsModalOpen(true)}>
-                See All Options
-              </Button>
             </div>
           </div>
         </div>
@@ -111,21 +104,6 @@ const Landing = () => {
       </section>
 
       <Footer />
-
-      {/* Options Modal */}
-      <Dialog open={isOptionsModalOpen} onOpenChange={setIsOptionsModalOpen}>
-        <DialogContent className="sm:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-center">Choose an Option</DialogTitle>
-          </DialogHeader>
-          <div className="grid sm:grid-cols-2 gap-4 mt-4">
-            <OptionCard icon={<FileText className="w-6 h-6" />} title="Create from Scratch" description="Build a new CV with our guided form and AI assistance." onClick={() => setIsOptionsModalOpen(false)} />
-            <OptionCard icon={<Target className="w-6 h-6" />} title="Tailor to a Job" description="Upload your CV and optimize it for a specific job posting." onClick={() => setIsOptionsModalOpen(false)} />
-            <OptionCard icon={<Globe className="w-6 h-6" />} title="Convert to Country Format" description="Adapt your CV to match country-specific standards." onClick={() => setIsOptionsModalOpen(false)} />
-            <OptionCard icon={<Shield className="w-6 h-6" />} title="ATS Compatibility Check" description="Analyze your CV's ATS score and get improvement tips." onClick={() => setIsOptionsModalOpen(false)} />
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
@@ -167,29 +145,6 @@ const ProcessStep = ({
     <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
     <p className="text-sm text-muted-foreground">{description}</p>
   </div>
-);
-
-const OptionCard = ({
-  icon,
-  title,
-  description,
-  onClick
-}: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  onClick: () => void;
-}) => (
-  <button 
-    onClick={onClick} 
-    className="flex flex-col items-start p-5 bg-secondary/50 rounded-xl border border-border hover:border-primary hover:shadow-md transition-all duration-200 text-left group"
-  >
-    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-      {icon}
-    </div>
-    <h3 className="text-base font-semibold text-foreground mb-1">{title}</h3>
-    <p className="text-sm text-muted-foreground">{description}</p>
-  </button>
 );
 
 export default Landing;
