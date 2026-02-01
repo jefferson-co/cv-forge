@@ -229,6 +229,11 @@ const Dashboard = () => {
                       <CVCard key={cv.id} cv={cv} onClick={() => handleCVClick(cv)} onDelete={(e) => handleDeleteClick(e, cv)} />
                     ))}
                   </div>
+                  {cvs.length > 5 && (
+                    <Button variant="outline" className="w-full">
+                      View all {cvs.length} CVs
+                    </Button>
+                  )}
                 </div>
               </div>
 
