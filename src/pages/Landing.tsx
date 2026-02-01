@@ -111,7 +111,7 @@ const Landing = () => {
               Join thousands of job seekers who've improved their CVs with CVCraft.
             </p>
             <Link to="/signup">
-              <Button variant="hero" size="xl" className="bg-accent hover:bg-accent/90">
+              <Button variant="hero" size="xl" className="bg-[#A62C00] hover:bg-[#A62C00]/90 text-white">
                 Get Started Free
                 <ArrowRight className="w-5 h-5" />
               </Button>
