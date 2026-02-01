@@ -25,9 +25,20 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const systemPrompt = `You are an expert CV writer and career coach. Your task is to analyze a job description and tailor a CV to match the job requirements.
+    const systemPrompt = `You are an expert CV writer and career coach with deep knowledge of international CV standards. Your task is to analyze a job description and tailor a CV to match the job requirements.
 
-CRITICAL RULES:
+CRITICAL EXTRACTION RULES:
+1. CAREFULLY SCAN THE ENTIRE CV TEXT for ALL sections including:
+   - Education (degrees, certifications, courses, training programs, academic achievements)
+   - Skills (technical skills, soft skills, languages, tools, technologies, frameworks)
+   - Work Experience (jobs, internships, volunteer work, freelance)
+   - Projects (personal, academic, professional projects)
+2. Education entries may be labeled as: Education, Academic Background, Qualifications, Training, Certifications, Degrees
+3. Skills may appear as: Skills, Technical Skills, Core Competencies, Expertise, Proficiencies, Technologies, Tools
+4. DO NOT return empty arrays for education or skills unless the CV truly has none
+5. If the CV has ANY educational background or skills mentioned ANYWHERE in the text, you MUST extract them
+
+TAILORING RULES:
 1. DO NOT invent false information or experience
 2. Emphasize relevant skills and experiences from the original CV
 3. Rewrite bullets to highlight achievements matching job requirements
@@ -45,7 +56,7 @@ For each modification, track the change with:
 
 Return a JSON response with:
 1. jobAnalysis: Extract job requirements
-2. tailoredCV: The modified CV content
+2. tailoredCV: The modified CV content with ALL education and skills properly included
 3. changes: Array of changes made
 4. matchScore: 0-100 score of how well the CV matches
 5. keywordsAdded: Array of keywords added from job description`;
@@ -66,6 +77,21 @@ ADDITIONAL EXTRACTED INFO:
 - Email: ${originalCV.email || 'Not detected'}
 - Phone: ${originalCV.phone || 'Not detected'}
 - LinkedIn: ${originalCV.linkedinUrl || 'Not detected'}
+
+CRITICAL INSTRUCTIONS:
+1. READ THE ENTIRE CV TEXT CAREFULLY. Look for ALL education entries even if they are:
+   - Listed under different headings (Education, Academic Background, Qualifications, etc.)
+   - Formatted differently (dates may be before or after institution name)
+   - Include certifications, training, or courses
+   
+2. EXTRACT ALL SKILLS from the CV including those mentioned in:
+   - Dedicated Skills sections
+   - Within job descriptions (e.g., "Used Python to build...")
+   - Project descriptions
+   - Summary/Profile sections
+   
+3. For education, extract EACH entry with: degree/certification name, institution, dates
+4. For skills, create a comprehensive list of ALL technical and soft skills mentioned
 
 Parse the raw CV text above and return your response as a valid JSON object with this structure:
 {
@@ -91,25 +117,39 @@ Parse the raw CV text above and return your response as a valid JSON object with
     "summary": "tailored professional summary emphasizing relevant experience for this role",
     "education": [
       {
-        "degree": "degree name",
-        "institution": "school name",
-        "year": "graduation year",
-        "description": "relevant details"
+        "id": "edu_1",
+        "degree": "degree/certification name - REQUIRED",
+        "institution": "school/university name - REQUIRED",
+        "location": "location if available",
+        "startDate": "start date or empty",
+        "endDate": "end date or graduation year",
+        "isCurrentlyStudying": false,
+        "gpa": "GPA if mentioned",
+        "coursework": "relevant courses if mentioned",
+        "description": "any additional details"
       }
     ],
     "workExperience": [
       {
-        "jobTitle": "position title",
-        "company": "company name",
-        "duration": "date range",
-        "description": "tailored bullet points highlighting relevant achievements"
+        "id": "work_1",
+        "jobTitle": "position title - REQUIRED",
+        "company": "company name - REQUIRED",
+        "location": "location if available",
+        "startDate": "start date",
+        "endDate": "end date",
+        "isCurrentlyWorking": false,
+        "responsibilities": "tailored bullet points highlighting relevant achievements"
       }
     ],
-    "skills": ["skill1", "skill2", "...prioritized by relevance to job"],
+    "skills": ["IMPORTANT: Include ALL skills found in CV, prioritized by relevance to job. This array should NOT be empty if the CV mentions any skills."],
     "projects": [
       {
-        "name": "project name",
-        "description": "tailored description"
+        "id": "proj_1",
+        "title": "project name",
+        "role": "role if mentioned",
+        "date": "date if mentioned",
+        "description": "tailored description",
+        "link": "link if available"
       }
     ],
     "customSections": []
@@ -126,7 +166,13 @@ Parse the raw CV text above and return your response as a valid JSON object with
   ],
   "matchScore": 85,
   "keywordsAdded": ["keyword1", "keyword2"]
-}`;
+}
+
+IMPORTANT REMINDERS:
+- The "education" array MUST contain all education entries found in the CV
+- The "skills" array MUST contain all skills found in the CV
+- Do NOT return empty arrays unless the CV genuinely has no education or skills
+- If you find education or skills ANYWHERE in the text, include them`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
