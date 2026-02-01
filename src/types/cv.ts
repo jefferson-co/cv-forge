@@ -51,6 +51,9 @@ export interface CVFormData {
   linkedinUrl: string;
   portfolioUrl: string;
   photoUrl: string;
+  // Country-specific personal details
+  dateOfBirth?: string;
+  nationality?: string;
   // Summary
   summary: string;
   // Education

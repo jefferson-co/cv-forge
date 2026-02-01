@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Info, ArrowLeft, Camera, AlertTriangle, Check } from "lucide-react";
+import { Info, ArrowLeft, Camera, Check } from "lucide-react";
 import { useTailorCV } from "@/contexts/TailorCVContext";
 import { COUNTRIES } from "@/types/cv";
 import CreateCVLayout from "@/components/create-cv/CreateCVLayout";
@@ -8,114 +8,37 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-
-// Countries that require or commonly expect a photo
-const PHOTO_REQUIRED_COUNTRIES = ['NG', 'DE', 'FR'];
-const PHOTO_OPTIONAL_COUNTRIES = ['NL'];
-
-// Countries that typically expect date of birth
-const DOB_EXPECTED_COUNTRIES = ['NG', 'DE', 'FR'];
-
-// Country-specific formatting rules
-const COUNTRY_FORMAT_RULES: Record<string, {
-  includePhoto: boolean;
-  includeDOB: boolean;
-  maxPages: number;
-  includeReferences: boolean;
-  dateFormat: string;
-  sectionOrder: string[];
-}> = {
-  NG: {
-    includePhoto: true,
-    includeDOB: true,
-    maxPages: 2,
-    includeReferences: true,
-    dateFormat: 'DD/MM/YYYY',
-    sectionOrder: ['personal', 'summary', 'education', 'experience', 'skills', 'references']
-  },
-  US: {
-    includePhoto: false,
-    includeDOB: false,
-    maxPages: 1,
-    includeReferences: false,
-    dateFormat: 'MM/YYYY',
-    sectionOrder: ['summary', 'experience', 'education', 'skills']
-  },
-  CA: {
-    includePhoto: false,
-    includeDOB: false,
-    maxPages: 2,
-    includeReferences: false,
-    dateFormat: 'MM/YYYY',
-    sectionOrder: ['summary', 'experience', 'education', 'skills']
-  },
-  GB: {
-    includePhoto: false,
-    includeDOB: false,
-    maxPages: 2,
-    includeReferences: false,
-    dateFormat: 'MM/YYYY',
-    sectionOrder: ['summary', 'experience', 'education', 'skills']
-  },
-  DE: {
-    includePhoto: true,
-    includeDOB: true,
-    maxPages: 2,
-    includeReferences: false,
-    dateFormat: 'DD.MM.YYYY',
-    sectionOrder: ['personal', 'summary', 'experience', 'education', 'skills']
-  },
-  SE: {
-    includePhoto: false,
-    includeDOB: false,
-    maxPages: 2,
-    includeReferences: false,
-    dateFormat: 'YYYY-MM',
-    sectionOrder: ['summary', 'experience', 'education', 'skills']
-  },
-  NZ: {
-    includePhoto: false,
-    includeDOB: false,
-    maxPages: 2,
-    includeReferences: true,
-    dateFormat: 'MM/YYYY',
-    sectionOrder: ['summary', 'experience', 'education', 'skills']
-  },
-  AU: {
-    includePhoto: false,
-    includeDOB: false,
-    maxPages: 3,
-    includeReferences: true,
-    dateFormat: 'MM/YYYY',
-    sectionOrder: ['summary', 'experience', 'education', 'skills', 'references']
-  },
-  FR: {
-    includePhoto: true,
-    includeDOB: true,
-    maxPages: 2,
-    includeReferences: false,
-    dateFormat: 'DD/MM/YYYY',
-    sectionOrder: ['personal', 'summary', 'experience', 'education', 'skills']
-  },
-  NL: {
-    includePhoto: false,
-    includeDOB: false,
-    maxPages: 2,
-    includeReferences: false,
-    dateFormat: 'DD-MM-YYYY',
-    sectionOrder: ['summary', 'experience', 'education', 'skills']
-  }
-};
+import CountryRequirementsForm from "@/components/tailor-cv/CountryRequirementsForm";
+import { 
+  PHOTO_REQUIRED_COUNTRIES, 
+  DOB_EXPECTED_COUNTRIES,
+  getCountryFormatRules 
+} from "@/lib/country-format-rules";
 
 const CountryPage = () => {
   const navigate = useNavigate();
-  const { data, setSelectedCountry } = useTailorCV();
+  const { data, setSelectedCountry, updateTailoredCVField } = useTailorCV();
 
-  const formatRules = COUNTRY_FORMAT_RULES[data.selectedCountry] || COUNTRY_FORMAT_RULES['US'];
+  const formatRules = getCountryFormatRules(data.selectedCountry);
   const requiresPhoto = PHOTO_REQUIRED_COUNTRIES.includes(data.selectedCountry);
+  const requiresDOB = DOB_EXPECTED_COUNTRIES.includes(data.selectedCountry);
   const hasPhoto = data.tailoredCVContent?.photoUrl;
+  const hasDOB = data.tailoredCVContent?.dateOfBirth;
+
+  // Helper functions for date formatting
+  const getDateRange = (item: any) => {
+    if (item.duration) return item.duration;
+    if (item.year) return item.year;
+    const start = item.startDate || '';
+    const end = item.isCurrentlyStudying || item.isCurrentlyWorking ? 'Present' : (item.endDate || '');
+    if (!start && !end) return '';
+    return `${start}${start && end ? ' - ' : ''}${end}`;
+  };
+
+  const getDescription = (item: any) => {
+    return item.responsibilities || item.description || '';
+  };
 
   // Generate CV text formatted according to country standards
   const generateCountryFormattedCV = () => {
@@ -123,20 +46,6 @@ const CountryPage = () => {
     if (!cv) return 'No content available';
 
     const lines: string[] = [];
-    
-    // Helper functions
-    const getDateRange = (item: any) => {
-      if (item.duration) return item.duration;
-      if (item.year) return item.year;
-      const start = item.startDate || '';
-      const end = item.isCurrentlyStudying || item.isCurrentlyWorking ? 'Present' : (item.endDate || '');
-      if (!start && !end) return '';
-      return `${start}${start && end ? ' - ' : ''}${end}`;
-    };
-
-    const getDescription = (item: any) => {
-      return item.responsibilities || item.description || '';
-    };
 
     // Header based on country format
     lines.push('═'.repeat(50));
@@ -145,7 +54,7 @@ const CountryPage = () => {
     lines.push('═'.repeat(50));
     lines.push('');
 
-    // Contact info (varies by country)
+    // Contact info
     const contactItems = [cv.email, cv.phone, cv.location].filter(Boolean);
     if (contactItems.length > 0) {
       lines.push(contactItems.join(' │ '));
@@ -159,11 +68,11 @@ const CountryPage = () => {
       lines.push('─'.repeat(30));
       lines.push('PERSONAL DETAILS');
       lines.push('─'.repeat(30));
-      if (requiresPhoto && !hasPhoto) {
-        lines.push('📷 [Photo Required]');
+      if (requiresPhoto) {
+        lines.push(cv.photoUrl ? '📷 [Photo Included]' : '📷 [Photo Required - Add Below]');
       }
-      lines.push('Date of Birth: [To be added]');
-      lines.push('Nationality: [To be added]');
+      lines.push(`Date of Birth: ${cv.dateOfBirth || '[To be added below]'}`);
+      lines.push(`Nationality: ${cv.nationality || '[To be added below]'}`);
     }
 
     lines.push('');
@@ -226,7 +135,6 @@ const CountryPage = () => {
           lines.push('SKILLS');
           lines.push('─'.repeat(30));
           if (cv.skills?.length > 0) {
-            // Format skills in a grid-like display
             const skillsPerLine = 3;
             for (let i = 0; i < cv.skills.length; i += skillsPerLine) {
               const chunk = cv.skills.slice(i, i + skillsPerLine);
@@ -284,6 +192,13 @@ const CountryPage = () => {
 
   const selectedCountryData = COUNTRIES.find(c => c.code === data.selectedCountry);
 
+  // Check if all required fields are filled
+  const isComplete = () => {
+    if (requiresPhoto && !hasPhoto) return false;
+    if (requiresDOB && !hasDOB) return false;
+    return true;
+  };
+
   return (
     <CreateCVLayout backTo="/tailor-cv/comparison">
       <ProgressIndicator 
@@ -321,23 +236,12 @@ const CountryPage = () => {
         </ScrollArea>
 
         {COUNTRIES.map((country) => {
-          const countryRules = COUNTRY_FORMAT_RULES[country.code] || COUNTRY_FORMAT_RULES['US'];
+          const countryRules = getCountryFormatRules(country.code);
           const countryRequiresPhoto = PHOTO_REQUIRED_COUNTRIES.includes(country.code);
+          const countryRequiresDOB = DOB_EXPECTED_COUNTRIES.includes(country.code);
           
           return (
             <TabsContent key={country.code} value={country.code}>
-              {/* Photo Requirement Alert */}
-              {countryRequiresPhoto && (
-                <Alert variant="destructive" className="mb-4 border-orange-300 bg-orange-50 text-orange-900">
-                  <Camera className="h-4 w-4" />
-                  <AlertTitle className="text-orange-900">Photo Required</AlertTitle>
-                  <AlertDescription className="text-orange-800">
-                    CVs in {country.name} typically include a professional photo. 
-                    {!hasPhoto && " You'll need to add a photo in the final download step."}
-                  </AlertDescription>
-                </Alert>
-              )}
-
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* CV Preview */}
                 <Card className="lg:col-span-2">
@@ -348,7 +252,7 @@ const CountryPage = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-4">
-                    <ScrollArea className="h-[500px]">
+                    <ScrollArea className="h-[400px]">
                       <div className="bg-white border rounded-lg p-6 font-mono text-xs whitespace-pre-wrap leading-relaxed">
                         {generateCountryFormattedCV()}
                       </div>
@@ -358,6 +262,19 @@ const CountryPage = () => {
 
                 {/* Country Info Panel */}
                 <div className="space-y-4">
+                  {/* Requirements Form - For countries that need photo/DOB */}
+                  <CountryRequirementsForm
+                    requiresPhoto={countryRequiresPhoto}
+                    requiresDOB={countryRequiresDOB}
+                    countryName={country.name}
+                    currentPhotoUrl={data.tailoredCVContent?.photoUrl}
+                    currentDOB={data.tailoredCVContent?.dateOfBirth}
+                    currentNationality={data.tailoredCVContent?.nationality}
+                    onPhotoChange={(url) => updateTailoredCVField('photoUrl', url)}
+                    onDOBChange={(dob) => updateTailoredCVField('dateOfBirth', dob)}
+                    onNationalityChange={(nationality) => updateTailoredCVField('nationality', nationality)}
+                  />
+
                   {/* Format Requirements */}
                   <Card>
                     <CardHeader className="pb-2">
@@ -412,17 +329,6 @@ const CountryPage = () => {
                       </ul>
                     </CardContent>
                   </Card>
-
-                  {/* Warning if photo needed but missing */}
-                  {countryRequiresPhoto && !hasPhoto && (
-                    <Alert>
-                      <AlertTriangle className="h-4 w-4" />
-                      <AlertTitle>Action Needed</AlertTitle>
-                      <AlertDescription className="text-sm">
-                        You'll be prompted to upload a professional photo on the download page.
-                      </AlertDescription>
-                    </Alert>
-                  )}
                 </div>
               </div>
             </TabsContent>
@@ -438,13 +344,15 @@ const CountryPage = () => {
             Back
           </Button>
           <div className="flex items-center gap-3">
-            {requiresPhoto && !hasPhoto && (
+            {!isComplete() && (requiresPhoto || requiresDOB) && (
               <span className="text-sm text-orange-600 hidden sm:inline">
-                <Camera className="w-4 h-4 inline mr-1" />
-                Photo needed
+                Please fill in required fields above
               </span>
             )}
-            <Button onClick={() => navigate('/tailor-cv/template')}>
+            <Button 
+              onClick={() => navigate('/tailor-cv/template')}
+              disabled={!isComplete()}
+            >
               Continue with {selectedCountryData?.name} Format
             </Button>
           </div>
