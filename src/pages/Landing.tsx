@@ -37,7 +37,7 @@ const Landing = () => {
               <span className="text-[#a82d00] font-serif text-center font-semibold"> interviews</span>
             </h1>
             
-            <p className="text-body-lg text-muted-foreground max-w-2xl mx-auto mb-10">
+            <p className="text-body-lg max-w-2xl mx-auto mb-10 text-[#808080]">
               Create ATS-optimized CVs tailored to specific jobs and countries. 
               Full transparency, complete control, professional results.
             </p>
