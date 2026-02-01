@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      cvs: {
+        Row: {
+          ats_score: number | null
+          content: Json | null
+          created_at: string
+          id: string
+          title: string
+          type: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ats_score?: number | null
+          content?: Json | null
+          created_at?: string
+          id?: string
+          title?: string
+          type?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ats_score?: number | null
+          content?: Json | null
+          created_at?: string
+          id?: string
+          title?: string
+          type?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

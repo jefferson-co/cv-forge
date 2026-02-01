@@ -9,6 +9,10 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
+import CreateCV from "./pages/CreateCV";
+import TailorCV from "./pages/TailorCV";
+import ConvertCV from "./pages/ConvertCV";
+import ATSCheck from "./pages/ATSCheck";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +33,38 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/create"
+              element={
+                <ProtectedRoute>
+                  <CreateCV />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tailor"
+              element={
+                <ProtectedRoute>
+                  <TailorCV />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/convert"
+              element={
+                <ProtectedRoute>
+                  <ConvertCV />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ats-check"
+              element={
+                <ProtectedRoute>
+                  <ATSCheck />
                 </ProtectedRoute>
               }
             />
