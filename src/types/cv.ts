@@ -40,6 +40,8 @@ export interface CustomSection {
 
 export interface CVFormData {
   experienceLevel: ExperienceLevel;
+  // CV Title
+  cvTitle: string;
   // Personal Info
   fullName: string;
   professionalTitle: string;
@@ -48,6 +50,7 @@ export interface CVFormData {
   location: string;
   linkedinUrl: string;
   portfolioUrl: string;
+  photoUrl: string;
   // Summary
   summary: string;
   // Education

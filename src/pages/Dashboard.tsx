@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FileText, LogOut, User, Settings, ChevronDown, BarChart3, Clock, Calendar } from "lucide-react";
+import { FileText, LogOut, User, Settings, ChevronDown, BarChart3, Clock, Calendar, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,6 +11,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { EmptyState } from "@/components/dashboard/EmptyState";
 import { CreateCVDropdown } from "@/components/dashboard/CreateCVDropdown";
@@ -36,6 +46,8 @@ const Dashboard = () => {
   const [loadingCvs, setLoadingCvs] = useState(true);
   const [selectedCV, setSelectedCV] = useState<CV | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [cvToDelete, setCvToDelete] = useState<CV | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -86,8 +98,35 @@ const Dashboard = () => {
 
   const handleEditCV = (cvId: string) => {
     setIsPreviewOpen(false);
-    // Navigate to form with the CV data
     navigate(`/create-cv/form?edit=${cvId}`);
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent, cv: CV) => {
+    e.stopPropagation();
+    setCvToDelete(cv);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!cvToDelete) return;
+    
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase
+        .from('cvs')
+        .delete()
+        .eq('id', cvToDelete.id);
+
+      if (error) throw error;
+
+      setCvs(prev => prev.filter(cv => cv.id !== cvToDelete.id));
+      toast.success("CV deleted successfully");
+    } catch (error) {
+      console.error('Error deleting CV:', error);
+      toast.error("Failed to delete CV");
+    } finally {
+      setIsDeleting(false);
+      setCvToDelete(null);
+    }
   };
 
   const handleSignOut = async () => {
@@ -187,7 +226,7 @@ const Dashboard = () => {
                   <h2 className="text-xl font-semibold text-foreground">Your CVs</h2>
                   <div className="grid gap-4">
                     {cvs.slice(0, 5).map((cv) => (
-                      <CVCard key={cv.id} cv={cv} onClick={() => handleCVClick(cv)} />
+                      <CVCard key={cv.id} cv={cv} onClick={() => handleCVClick(cv)} onDelete={(e) => handleDeleteClick(e, cv)} />
                     ))}
                   </div>
                   {cvs.length > 5 && (
@@ -253,20 +292,42 @@ const Dashboard = () => {
         cv={selectedCV}
         onEdit={handleEditCV}
       />
+
+      <AlertDialog open={!!cvToDelete} onOpenChange={() => setCvToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete CV?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{cvToDelete?.title}"? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
 
-const CVCard = ({ cv, onClick }: { cv: CV; onClick: () => void }) => {
+const CVCard = ({ cv, onClick, onDelete }: { cv: CV; onClick: () => void; onDelete: (e: React.MouseEvent) => void }) => {
   const typeLabels: Record<string, string> = {
     scratch: "From Scratch",
     tailored: "Tailored",
     converted: "Converted",
+    draft: "Draft",
   };
 
   return (
     <div 
-      className="bg-card rounded-xl border border-border p-5 hover:border-primary/30 transition-colors cursor-pointer"
+      className="bg-card rounded-xl border border-border p-5 hover:border-primary/30 transition-colors cursor-pointer group"
       onClick={onClick}
     >
       <div className="flex items-start justify-between">
@@ -287,14 +348,24 @@ const CVCard = ({ cv, onClick }: { cv: CV; onClick: () => void }) => {
             </div>
           </div>
         </div>
-        {cv.ats_score !== null && (
-          <div className={`text-sm font-semibold px-2 py-1 rounded ${
-            cv.ats_score >= 80 ? 'bg-green-100 text-green-700' : 
-            cv.ats_score >= 60 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'
-          }`}>
-            {cv.ats_score}% ATS
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {cv.ats_score !== null && (
+            <div className={`text-sm font-semibold px-2 py-1 rounded ${
+              cv.ats_score >= 80 ? 'bg-green-100 text-green-700' : 
+              cv.ats_score >= 60 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'
+            }`}>
+              {cv.ats_score}% ATS
+            </div>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+            onClick={onDelete}
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );

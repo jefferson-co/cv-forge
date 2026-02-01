@@ -6,6 +6,7 @@ import { toast } from '@/hooks/use-toast';
 
 const defaultFormData: CVFormData = {
   experienceLevel: 'no-experience',
+  cvTitle: '',
   fullName: '',
   professionalTitle: '',
   email: '',
@@ -13,6 +14,7 @@ const defaultFormData: CVFormData = {
   location: '',
   linkedinUrl: '',
   portfolioUrl: '',
+  photoUrl: '',
   summary: '',
   education: [],
   workExperience: [],
@@ -71,11 +73,13 @@ export const CVFormProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
       const cvContent = JSON.parse(JSON.stringify(formData));
 
+      const cvTitle = formData.cvTitle || (formData.fullName ? `${formData.fullName}'s CV` : 'Untitled CV');
+
       if (existingDraft) {
         await supabase
           .from('cvs')
           .update({
-            title: formData.fullName ? `${formData.fullName}'s CV` : 'Untitled CV',
+            title: cvTitle,
             content: cvContent,
             type: 'draft',
           })
@@ -85,7 +89,7 @@ export const CVFormProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           .from('cvs')
           .insert({
             user_id: user.id,
-            title: formData.fullName ? `${formData.fullName}'s CV` : 'Untitled CV',
+            title: cvTitle,
             content: cvContent,
             type: 'draft',
           });
