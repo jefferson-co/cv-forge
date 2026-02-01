@@ -1,77 +1,17 @@
 import { useState } from "react";
-import { FileText, Target, Globe, Shield, ArrowRight, Sparkles, CheckCircle, Upload, Download, Zap, BarChart3, FileCheck, Layout, Menu, X, Codepen } from "lucide-react";
+import { FileText, Target, Globe, Shield, ArrowRight, Sparkles, CheckCircle, Upload, Download, Zap, BarChart3, FileCheck, Layout } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+
 const Landing = () => {
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
-    e.preventDefault();
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
-    setIsMobileMenuOpen(false);
-  };
-  return <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <Codepen className="w-4 h-4 text-primary-foreground" />
-            </div>
-            <span className="text-lg font-semibold text-foreground">Modiq</span>
-          </Link>
-          
-          <div className="hidden md:flex items-center gap-8">
-            <a href="#features" onClick={e => scrollToSection(e, 'features')} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</a>
-            <a href="#how-it-works" onClick={e => scrollToSection(e, 'how-it-works')} className="text-sm text-muted-foreground hover:text-foreground transition-colors">How It Works</a>
-            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
-            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">About</a>
-          </div>
-          
-          <div className="hidden md:flex items-center gap-3">
-            <Link to="/login">
-              <Button variant="ghost" size="sm">Log in</Button>
-            </Link>
-            <Link to="/signup">
-              <Button variant="default" size="sm">Sign Up</Button>
-            </Link>
-          </div>
 
-          {/* Mobile Menu Button */}
-          <button className="md:hidden p-2 text-foreground" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} aria-label="Toggle menu">
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && <div className="md:hidden bg-background border-b border-border animate-fade-in">
-            <div className="container mx-auto px-6 py-4 flex flex-col gap-4">
-              <a href="#features" onClick={e => scrollToSection(e, 'features')} className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2">
-                Features
-              </a>
-              <a href="#how-it-works" onClick={e => scrollToSection(e, 'how-it-works')} className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2">
-                How It Works
-              </a>
-              <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2">Pricing</a>
-              <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2">About</a>
-              <div className="flex flex-col gap-2 pt-4 border-t border-border">
-                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button variant="ghost" size="sm" className="w-full justify-center">Log in</Button>
-                </Link>
-                <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button variant="default" size="sm" className="w-full justify-center">Sign Up</Button>
-                </Link>
-              </div>
-            </div>
-          </div>}
-      </nav>
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
 
       {/* Hero Section */}
       <section className="pt-32 pb-24 px-6 bg-background">
@@ -159,8 +99,8 @@ const Landing = () => {
             Ready to land more interviews?
           </h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
-          Join thousands of job seekers who've improved their CVs and advanced their careers with Modiq.
-        </p>
+            Join thousands of job seekers who've improved their CVs and advanced their careers with Modiq.
+          </p>
           <Link to="/signup">
             <Button size="lg" className="gap-2">
               Get Started Free
@@ -170,59 +110,7 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-16 px-6 bg-foreground text-background">
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid md:grid-cols-4 gap-12 mb-12">
-            {/* Brand */}
-            <div className="md:col-span-1">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                  <FileText className="w-4 h-4 text-primary-foreground" />
-                </div>
-                <span className="text-lg font-semibold">Modiq</span>
-              </div>
-              <p className="text-sm text-background/60">
-                AI-powered CV builder helping you land your dream job.
-              </p>
-            </div>
-            
-            {/* Company */}
-            <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-3">
-                <li><a href="#" className="text-sm text-background/60 hover:text-background transition-colors">About Us</a></li>
-                <li><a href="#" className="text-sm text-background/60 hover:text-background transition-colors">Contact</a></li>
-              </ul>
-            </div>
-            
-            {/* Product */}
-            <div>
-              <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-3">
-                <li><a href="#features" className="text-sm text-background/60 hover:text-background transition-colors">Features</a></li>
-                <li><a href="#" className="text-sm text-background/60 hover:text-background transition-colors">Pricing</a></li>
-                <li><a href="#" className="text-sm text-background/60 hover:text-background transition-colors">FAQ</a></li>
-              </ul>
-            </div>
-            
-            {/* Legal */}
-            <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-3">
-                <li><a href="#" className="text-sm text-background/60 hover:text-background transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="text-sm text-background/60 hover:text-background transition-colors">Terms of Service</a></li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="pt-8 border-t border-background/10 text-center">
-            <p className="text-sm text-background/60">
-              © 2026 Jeff_cre8. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
 
       {/* Options Modal */}
       <Dialog open={isOptionsModalOpen} onOpenChange={setIsOptionsModalOpen}>
@@ -238,8 +126,10 @@ const Landing = () => {
           </div>
         </DialogContent>
       </Dialog>
-    </div>;
+    </div>
+  );
 };
+
 const FeatureCard = ({
   icon,
   title,
@@ -248,13 +138,16 @@ const FeatureCard = ({
   icon: React.ReactNode;
   title: string;
   description: string;
-}) => <div className="bg-background rounded-xl p-6 border border-border hover:shadow-md transition-shadow duration-300">
+}) => (
+  <div className="bg-background rounded-xl p-6 border border-border hover:shadow-md transition-shadow duration-300">
     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4">
       {icon}
     </div>
     <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
     <p className="text-sm text-muted-foreground">{description}</p>
-  </div>;
+  </div>
+);
+
 const ProcessStep = ({
   step,
   title,
@@ -265,14 +158,17 @@ const ProcessStep = ({
   title: string;
   description: string;
   icon: React.ReactNode;
-}) => <div className="text-center">
+}) => (
+  <div className="text-center">
     <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-4">
       {icon}
     </div>
     <div className="text-xs font-semibold text-primary mb-2">{step}</div>
     <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
     <p className="text-sm text-muted-foreground">{description}</p>
-  </div>;
+  </div>
+);
+
 const OptionCard = ({
   icon,
   title,
@@ -283,11 +179,17 @@ const OptionCard = ({
   title: string;
   description: string;
   onClick: () => void;
-}) => <button onClick={onClick} className="flex flex-col items-start p-5 bg-secondary/50 rounded-xl border border-border hover:border-primary hover:shadow-md transition-all duration-200 text-left group">
+}) => (
+  <button 
+    onClick={onClick} 
+    className="flex flex-col items-start p-5 bg-secondary/50 rounded-xl border border-border hover:border-primary hover:shadow-md transition-all duration-200 text-left group"
+  >
     <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
       {icon}
     </div>
     <h3 className="text-base font-semibold text-foreground mb-1">{title}</h3>
     <p className="text-sm text-muted-foreground">{description}</p>
-  </button>;
+  </button>
+);
+
 export default Landing;
