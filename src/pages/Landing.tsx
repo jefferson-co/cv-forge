@@ -1,4 +1,4 @@
-import { FileText, Target, Globe, Shield, ArrowRight, Sparkles, CheckCircle, Upload, Download, Feather } from "lucide-react";
+import { FileText, Target, Globe, Shield, ArrowRight, Sparkles, CheckCircle, Upload, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 const Landing = () => {
@@ -10,7 +10,7 @@ const Landing = () => {
             <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#a82d00] text-white">
               <FileText className="w-4 h-4 text-accent-foreground" />
             </div>
-            <Feather className="text-heading-sm font-semibold bg-primary text-white">CVCraft</Feather>
+            
           </Link>
           <div className="flex items-center gap-4">
             <Link to="/login">
@@ -32,7 +32,7 @@ const Landing = () => {
               <span className="font-serif font-thin text-xs text-white">AI-powered CV optimization</span>
             </div>
             
-            <h1 className="text-display-lg font-bold text-foreground mb-6 text-balance">
+            <h1 className="text-display-lg mb-6 text-balance text-[#121212] font-serif text-center font-semibold">
               Craft CVs that land
               <span className="text-accent"> interviews</span>
             </h1>
