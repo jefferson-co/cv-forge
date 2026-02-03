@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CVFormProvider } from "@/contexts/CVFormContext";
 import { TailorCVProvider } from "@/contexts/TailorCVContext";
+import { ATSCheckProvider } from "@/contexts/ATSCheckContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Landing from "./pages/Landing";
 import About from "./pages/About";
@@ -15,7 +16,6 @@ import Dashboard from "./pages/Dashboard";
 import CreateCV from "./pages/CreateCV";
 import TailorCV from "./pages/TailorCV";
 import ConvertCV from "./pages/ConvertCV";
-import ATSCheck from "./pages/ATSCheck";
 import NotFound from "./pages/NotFound";
 
 // Create CV flow pages
@@ -34,6 +34,11 @@ import TailorCountryPage from "./pages/tailor-cv/CountryPage";
 import TailorTemplatePage from "./pages/tailor-cv/TailorTemplatePage";
 import TailorDownloadPage from "./pages/tailor-cv/TailorDownloadPage";
 
+// ATS Check flow pages
+import ATSUploadPage from "./pages/ats-check/UploadPage";
+import ATSAnalyzingPage from "./pages/ats-check/AnalyzingPage";
+import ATSResultsPage from "./pages/ats-check/ResultsPage";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -41,7 +46,8 @@ const App = () => (
     <AuthProvider>
       <CVFormProvider>
         <TailorCVProvider>
-          <TooltipProvider>
+          <ATSCheckProvider>
+            <TooltipProvider>
             <Toaster />
             <Sonner />
             <BrowserRouter>
@@ -181,19 +187,37 @@ const App = () => (
                     </ProtectedRoute>
                   }
                 />
+                {/* ATS Check Flow */}
                 <Route
                   path="/ats-check"
                   element={
                     <ProtectedRoute>
-                      <ATSCheck />
+                      <ATSUploadPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/ats-check/analyzing"
+                  element={
+                    <ProtectedRoute>
+                      <ATSAnalyzingPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/ats-check/results"
+                  element={
+                    <ProtectedRoute>
+                      <ATSResultsPage />
                     </ProtectedRoute>
                   }
                 />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
+              </BrowserRouter>
+            </TooltipProvider>
+          </ATSCheckProvider>
         </TailorCVProvider>
       </CVFormProvider>
     </AuthProvider>
