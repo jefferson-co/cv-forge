@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
@@ -62,7 +63,10 @@ const ResetPassword = () => {
 
   if (!isRecovery && !success) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-6">
+      <div className="min-h-screen bg-background flex items-center justify-center px-6 relative">
+        <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
         <div className="w-full max-w-md text-center animate-fade-up">
           <div className="w-16 h-16 rounded-2xl bg-destructive/10 flex items-center justify-center mx-auto mb-6">
             <Lock className="w-8 h-8 text-destructive" />
@@ -81,7 +85,10 @@ const ResetPassword = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-6">
+      <div className="min-h-screen bg-background flex items-center justify-center px-6 relative">
+        <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
         <div className="w-full max-w-md text-center animate-fade-up">
           <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
             <CheckCircle2 className="w-8 h-8 text-primary" />
@@ -119,7 +126,10 @@ const ResetPassword = () => {
       </div>
 
       {/* Right Panel */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12">
+      <div className="flex-1 flex items-center justify-center px-6 py-12 relative">
+        <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
         <div className="w-full max-w-md animate-fade-up">
           <div className="mb-8">
             <Link to="/" className="flex items-center gap-2 mb-12">

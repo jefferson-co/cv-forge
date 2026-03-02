@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -50,7 +51,10 @@ const ForgotPassword = () => {
       </div>
 
       {/* Right Panel */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12">
+      <div className="flex-1 flex items-center justify-center px-6 py-12 relative">
+        <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
         <div className="w-full max-w-md animate-fade-up">
           <div className="mb-8">
             <Link to="/" className="flex items-center gap-2 mb-12">
