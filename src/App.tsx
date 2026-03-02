@@ -19,7 +19,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import CreateCV from "./pages/CreateCV";
 import TailorCV from "./pages/TailorCV";
-import ConvertCV from "./pages/ConvertCV";
+
 import NotFound from "./pages/NotFound";
 
 // Create CV flow pages
@@ -72,7 +72,7 @@ const AnimatedRoutes = () => {
         <Route path="/tailor-cv/template" element={<ProtectedRoute><PageTransition><TailorTemplatePage /></PageTransition></ProtectedRoute>} />
         <Route path="/tailor-cv/download" element={<ProtectedRoute><PageTransition><TailorDownloadPage /></PageTransition></ProtectedRoute>} />
         <Route path="/tailor" element={<ProtectedRoute><PageTransition><TailorUploadPage /></PageTransition></ProtectedRoute>} />
-        <Route path="/convert" element={<ProtectedRoute><PageTransition><ConvertCV /></PageTransition></ProtectedRoute>} />
+        
         <Route path="/ats-check" element={<ProtectedRoute><PageTransition><ATSUploadPage /></PageTransition></ProtectedRoute>} />
         <Route path="/ats-check/analyzing" element={<ProtectedRoute><PageTransition><ATSAnalyzingPage /></PageTransition></ProtectedRoute>} />
         <Route path="/ats-check/results" element={<ProtectedRoute><PageTransition><ATSResultsPage /></PageTransition></ProtectedRoute>} />
