@@ -21,15 +21,15 @@ const ExperienceLevelCard = ({
       onClick={onClick}
       className={cn(
         "group relative flex flex-col items-center p-6 sm:p-8 rounded-xl border-2 transition-all duration-200",
-        "bg-card hover:shadow-lg",
+        "bg-card hover:shadow-lg hover:-translate-y-1",
         isSelected 
           ? "border-primary shadow-glow" 
           : "border-border hover:border-primary/50"
       )}
     >
       <div className={cn(
-        "w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-colors",
-        isSelected ? "bg-primary" : "bg-secondary group-hover:bg-primary/10"
+        "w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-all duration-200",
+        isSelected ? "bg-primary scale-110" : "bg-secondary group-hover:bg-primary/10 group-hover:scale-105"
       )}>
         <Icon className={cn(
           "w-8 h-8 transition-colors",

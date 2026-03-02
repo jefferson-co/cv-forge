@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Check, ArrowLeft } from "lucide-react";
+import { motion } from "framer-motion";
 import { useTailorCV } from "@/contexts/TailorCVContext";
 import { TEMPLATES, COUNTRIES } from "@/types/cv";
 import CreateCVLayout from "@/components/create-cv/CreateCVLayout";
@@ -49,39 +50,42 @@ const TailorTemplatePage = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {TEMPLATES.map((template) => (
-          <Card 
+        {TEMPLATES.map((template, i) => (
+          <motion.div
             key={template.id}
-            className={cn(
-              "cursor-pointer transition-all hover:shadow-lg overflow-hidden",
-              data.selectedTemplate === template.id 
-                ? "ring-2 ring-primary shadow-lg" 
-                : "hover:border-primary/50"
-            )}
-            onClick={() => setSelectedTemplate(template.id)}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: i * 0.07, ease: "easeOut" }}
           >
-            <CardContent className="p-0">
-              {/* Template Preview Image */}
-              <div className="aspect-[3/4] bg-muted relative overflow-hidden">
-                <img 
-                  src={templateImages[template.id]} 
-                  alt={`${template.name} template preview`}
-                  className="w-full h-full object-cover object-top"
-                />
-                {data.selectedTemplate === template.id && (
-                  <div className="absolute top-3 right-3 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                    <Check className="w-5 h-5 text-primary-foreground" />
-                  </div>
-                )}
-              </div>
-              
-              {/* Template Info */}
-              <div className="p-4">
-                <h3 className="font-semibold text-foreground mb-1">{template.name}</h3>
-                <p className="text-sm text-muted-foreground">{template.description}</p>
-              </div>
-            </CardContent>
-          </Card>
+            <Card 
+              className={cn(
+                "cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1 overflow-hidden",
+                data.selectedTemplate === template.id 
+                  ? "ring-2 ring-primary shadow-lg" 
+                  : "hover:border-primary/50"
+              )}
+              onClick={() => setSelectedTemplate(template.id)}
+            >
+              <CardContent className="p-0">
+                <div className="aspect-[3/4] bg-muted relative overflow-hidden">
+                  <img 
+                    src={templateImages[template.id]} 
+                    alt={`${template.name} template preview`}
+                    className="w-full h-full object-cover object-top"
+                  />
+                  {data.selectedTemplate === template.id && (
+                    <div className="absolute top-3 right-3 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                      <Check className="w-5 h-5 text-primary-foreground" />
+                    </div>
+                  )}
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-foreground mb-1">{template.name}</h3>
+                  <p className="text-sm text-muted-foreground">{template.description}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         ))}
       </div>
 

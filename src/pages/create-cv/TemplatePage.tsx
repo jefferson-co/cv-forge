@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Check } from "lucide-react";
+import { motion } from "framer-motion";
 import { useCVForm } from "@/contexts/CVFormContext";
 import { TEMPLATES } from "@/types/cv";
 import CreateCVLayout from "@/components/create-cv/CreateCVLayout";
@@ -47,34 +48,40 @@ const TemplatePage = () => {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {TEMPLATES.map((template) => (
-          <Card 
+        {TEMPLATES.map((template, i) => (
+          <motion.div
             key={template.id}
-            className={cn(
-              "cursor-pointer transition-all duration-200 overflow-hidden",
-              selectedTemplate === template.id 
-                ? "ring-2 ring-primary shadow-glow" 
-                : "hover:border-primary/50"
-            )}
-            onClick={() => setSelectedTemplate(template.id)}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, delay: i * 0.07, ease: "easeOut" }}
           >
-            <div className="aspect-[3/4] bg-white relative border-b overflow-hidden">
-              <img 
-                src={templateImages[template.id]} 
-                alt={`${template.name} template preview`}
-                className="w-full h-full object-cover object-top"
-              />
-              {selectedTemplate === template.id && (
-                <div className="absolute top-2 right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                  <Check className="w-4 h-4 text-primary-foreground" />
-                </div>
+            <Card 
+              className={cn(
+                "cursor-pointer transition-all duration-200 overflow-hidden hover:shadow-lg hover:-translate-y-1",
+                selectedTemplate === template.id 
+                  ? "ring-2 ring-primary shadow-glow" 
+                  : "hover:border-primary/50"
               )}
-            </div>
-            <CardContent className="p-4 bg-card">
-              <h3 className="font-semibold text-foreground">{template.name}</h3>
-              <p className="text-sm text-muted-foreground">{template.description}</p>
-            </CardContent>
-          </Card>
+              onClick={() => setSelectedTemplate(template.id)}
+            >
+              <div className="aspect-[3/4] bg-white relative border-b overflow-hidden">
+                <img 
+                  src={templateImages[template.id]} 
+                  alt={`${template.name} template preview`}
+                  className="w-full h-full object-cover object-top"
+                />
+                {selectedTemplate === template.id && (
+                  <div className="absolute top-2 right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                    <Check className="w-4 h-4 text-primary-foreground" />
+                  </div>
+                )}
+              </div>
+              <CardContent className="p-4 bg-card">
+                <h3 className="font-semibold text-foreground">{template.name}</h3>
+                <p className="text-sm text-muted-foreground">{template.description}</p>
+              </CardContent>
+            </Card>
+          </motion.div>
         ))}
       </div>
 

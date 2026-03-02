@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Codepen, LogOut, User, ChevronDown, BarChart3, Clock, Calendar, Trash2, FileText, TrendingUp, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -200,7 +201,12 @@ const Dashboard = () => {
           ) : (
             <>
               {/* Welcome Header */}
-              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-10">
+              <motion.div 
+                className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-10"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              >
                 <div>
                   <p className="text-xs sm:text-sm font-medium text-primary mb-1">Dashboard</p>
                   <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground font-display">
@@ -208,32 +214,33 @@ const Dashboard = () => {
                   </h1>
                 </div>
                 <CreateCVDropdown />
-              </div>
+              </motion.div>
 
               {/* Stats Row — vertical on mobile, horizontal on desktop */}
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4 mb-6 sm:mb-10">
-                <StatCard
-                  icon={<FileText className="w-4 h-4" />}
-                  label="CVs this month"
-                  value={cvsThisMonth.toString()}
-                  accent={false}
-                />
-                <StatCard
-                  icon={<TrendingUp className="w-4 h-4" />}
-                  label="Avg. ATS score"
-                  value={avgAtsScore !== null ? `${avgAtsScore}%` : "—"}
-                  accent={avgAtsScore !== null && avgAtsScore >= 75}
-                />
-                <StatCard
-                  icon={<BarChart3 className="w-4 h-4" />}
-                  label="Jobs tailored"
-                  value={tailoredCount.toString()}
-                  accent={false}
-                />
+                {[
+                  { icon: <FileText className="w-4 h-4" />, label: "CVs this month", value: cvsThisMonth.toString(), accent: false },
+                  { icon: <TrendingUp className="w-4 h-4" />, label: "Avg. ATS score", value: avgAtsScore !== null ? `${avgAtsScore}%` : "—", accent: avgAtsScore !== null && avgAtsScore >= 75 },
+                  { icon: <BarChart3 className="w-4 h-4" />, label: "Jobs tailored", value: tailoredCount.toString(), accent: false },
+                ].map((stat, i) => (
+                  <motion.div
+                    key={stat.label}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.1 + i * 0.08, ease: "easeOut" }}
+                  >
+                    <StatCard {...stat} />
+                  </motion.div>
+                ))}
               </div>
 
               {/* CV List + ATS — vertical stack on mobile */}
-              <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-8">
+              <motion.div 
+                className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.35, ease: "easeOut" }}
+              >
                 {/* CV List */}
                 <div className="lg:col-span-2">
                   <div className="flex items-center justify-between mb-4 sm:mb-5">
@@ -291,7 +298,7 @@ const Dashboard = () => {
                     )}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </>
           )}
         </div>

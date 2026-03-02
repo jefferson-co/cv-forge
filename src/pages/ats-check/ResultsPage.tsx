@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, FileText, CheckCircle, AlertTriangle, XCircle, Info, ChevronDown, ChevronUp, Download, Target, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 import { useATSCheck } from "@/contexts/ATSCheckContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -74,16 +75,26 @@ const ResultsPage = () => {
     <CreateCVLayout backTo="/dashboard">
       <div className="max-w-4xl mx-auto">
         {/* Header with Score */}
-        <div className="text-center mb-8">
+        <motion.div 
+          className="text-center mb-8"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
           <h1 className="text-3xl font-bold text-foreground mb-4">
             Your ATS Score: <span className={getScoreColor(result.overallScore)}>{result.overallScore}/100</span>
           </h1>
           <p className="text-muted-foreground">
             Based on analysis of your CV{data.hasJobDescription ? ' and the job description' : ''}
           </p>
-        </div>
+        </motion.div>
 
         {/* Overall Assessment Card */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4, delay: 0.15, ease: "easeOut" }}
+        >
         <Card className="mb-8">
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row items-center gap-6">
@@ -136,6 +147,7 @@ const ResultsPage = () => {
             </div>
           </CardContent>
         </Card>
+        </motion.div>
 
         {/* Critical Issues Panel (if score < 60) */}
         {result.criticalIssues.length > 0 && result.overallScore < 60 && (
