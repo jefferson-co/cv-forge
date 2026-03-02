@@ -38,15 +38,6 @@ export const CreateCVDropdown = () => {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="cursor-pointer">
-          <Link to="/convert" className="flex items-center gap-3 py-2">
-            <Globe className="w-4 h-4 text-primary" />
-            <div>
-              <p className="font-medium">Convert Format</p>
-              <p className="text-xs text-muted-foreground">Adapt to country standards</p>
-            </div>
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild className="cursor-pointer">
           <Link to="/ats-check" className="flex items-center gap-3 py-2">
             <Shield className="w-4 h-4 text-primary" />
             <div>
