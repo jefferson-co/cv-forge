@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FileText, FileDown, Check, Pencil, Sparkles, Target, LayoutDashboard } from "lucide-react";
+import { motion } from "framer-motion";
 import { useTailorCV } from "@/contexts/TailorCVContext";
 import { COUNTRIES, TEMPLATES } from "@/types/cv";
 import CreateCVLayout from "@/components/create-cv/CreateCVLayout";
@@ -246,14 +247,24 @@ const TailorDownloadPage = () => {
         stepLabels={['Country', 'Template', 'Download']} 
       />
 
-      <div className="text-center mb-8">
-        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+      <motion.div 
+        className="text-center mb-8"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
+        <motion.div 
+          className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.4, delay: 0.15, type: "spring", stiffness: 200 }}
+        >
           {hasDownloaded ? (
             <Check className="w-8 h-8 text-primary" />
           ) : (
             <FileText className="w-8 h-8 text-primary" />
           )}
-        </div>
+        </motion.div>
         <h1 className="text-2xl font-bold text-foreground mb-2">
           {hasDownloaded ? 'Your CV has been downloaded!' : 'Your Tailored CV is Ready! 🎉'}
         </h1>
@@ -266,7 +277,7 @@ const TailorDownloadPage = () => {
         <Badge className="bg-green-500 text-white">
           {data.matchScore}% Match to Job Description
         </Badge>
-      </div>
+      </motion.div>
 
       {!hasDownloaded && (
         <>
