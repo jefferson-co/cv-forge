@@ -148,7 +148,7 @@ ${formData.projects.map(p => `${p.title}${p.role ? ` (${p.role})` : ''}\n${p.des
               {/* CV Preview */}
               <Card className="lg:col-span-2">
                 <CardContent className="p-6">
-                  <div className="bg-white border rounded-lg p-8 min-h-[600px] font-mono text-sm whitespace-pre-wrap">
+                  <div className="bg-white text-gray-900 border rounded-lg p-8 min-h-[600px] font-mono text-sm whitespace-pre-wrap">
                     {/* Show photo for countries that expect it */}
                     {['NG', 'DE', 'FR'].includes(country.code) && formData.photoUrl && (
                       <div className="flex justify-end mb-4">

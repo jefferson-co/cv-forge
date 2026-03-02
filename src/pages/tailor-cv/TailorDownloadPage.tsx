@@ -286,7 +286,7 @@ const TailorDownloadPage = () => {
                   Edit
                 </Button>
               </div>
-              <div className="bg-white border rounded-lg p-8 min-h-[400px] font-mono text-sm whitespace-pre-wrap overflow-auto max-h-[500px]">
+              <div className="bg-white text-gray-900 border rounded-lg p-8 min-h-[400px] font-mono text-sm whitespace-pre-wrap overflow-auto max-h-[500px]">
                 {generateCVContent()}
               </div>
             </CardContent>

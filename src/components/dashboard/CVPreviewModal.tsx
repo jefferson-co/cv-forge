@@ -87,7 +87,7 @@ ${content.customSections?.length > 0
         </DialogHeader>
 
         <ScrollArea className="flex-1 min-h-0">
-          <div className="bg-white border rounded-lg p-8 font-mono text-sm whitespace-pre-wrap">
+          <div className="bg-white text-gray-900 border rounded-lg p-8 font-mono text-sm whitespace-pre-wrap">
             {/* Show photo for countries that expect it */}
             {shouldShowPhoto && (
               <div className="flex justify-end mb-4">

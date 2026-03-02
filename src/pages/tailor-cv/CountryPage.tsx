@@ -253,7 +253,7 @@ const CountryPage = () => {
                   </CardHeader>
                   <CardContent className="p-4">
                     <ScrollArea className="h-[400px]">
-                      <div className="bg-white border rounded-lg p-6 font-mono text-xs whitespace-pre-wrap leading-relaxed">
+                      <div className="bg-white text-gray-900 border rounded-lg p-6 font-mono text-xs whitespace-pre-wrap leading-relaxed">
                         {generateCountryFormattedCV()}
                       </div>
                     </ScrollArea>
@@ -339,11 +339,11 @@ const CountryPage = () => {
       {/* Action bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border py-4 px-6 z-40">
         <div className="container mx-auto max-w-4xl flex items-center justify-between">
-          <Button variant="outline" onClick={() => navigate('/tailor-cv/comparison')} className="gap-2">
+          <Button variant="outline" onClick={() => navigate('/tailor-cv/comparison')} className="gap-2 hidden sm:inline-flex">
             <ArrowLeft className="w-4 h-4" />
             Back
           </Button>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
             {!isComplete() && (requiresPhoto || requiresDOB) && (
               <span className="text-sm text-orange-600 hidden sm:inline">
                 Please fill in required fields above
@@ -352,6 +352,7 @@ const CountryPage = () => {
             <Button 
               onClick={() => navigate('/tailor-cv/template')}
               disabled={!isComplete()}
+              className="w-full sm:w-auto"
             >
               Continue with {selectedCountryData?.name} Format
             </Button>
