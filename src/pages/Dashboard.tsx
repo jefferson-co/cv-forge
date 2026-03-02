@@ -193,17 +193,17 @@ const Dashboard = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="pt-24 pb-16 px-4 sm:px-6">
+      <main className="pt-20 pb-8 sm:pb-16 px-3 sm:px-6">
         <div className="container mx-auto max-w-6xl">
           {hasNoCvs ? (
             <EmptyState />
           ) : (
             <>
               {/* Welcome Header */}
-              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-10">
+              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 sm:gap-4 mb-4 sm:mb-10">
                 <div>
-                  <p className="text-sm font-medium text-primary mb-1">Dashboard</p>
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground font-display">
+                  <p className="text-xs sm:text-sm font-medium text-primary mb-0.5 sm:mb-1">Dashboard</p>
+                  <h1 className="text-xl sm:text-3xl md:text-4xl font-bold text-foreground font-display">
                     Welcome back, {firstName}
                   </h1>
                 </div>
@@ -211,7 +211,7 @@ const Dashboard = () => {
               </div>
 
               {/* Stats Row */}
-              <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6 sm:mb-10">
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-10">
                 <StatCard
                   icon={<FileText className="w-4 h-4" />}
                   label="CVs this month"
@@ -235,11 +235,11 @@ const Dashboard = () => {
               <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
                 {/* CV List */}
                 <div className="lg:col-span-2">
-                  <div className="flex items-center justify-between mb-5">
-                    <h2 className="text-lg font-semibold text-foreground font-display">Your CVs</h2>
+                  <div className="flex items-center justify-between mb-3 sm:mb-5">
+                    <h2 className="text-base sm:text-lg font-semibold text-foreground font-display">Your CVs</h2>
                     <span className="text-xs text-muted-foreground">{cvs.length} total</span>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     {cvs.slice(0, 5).map((cv, i) => (
                       <CVCard
                         key={cv.id}
@@ -384,37 +384,37 @@ const CVCard = ({
 
   return (
     <div
-      className="bg-card rounded-xl border border-border p-4 sm:p-5 hover:border-primary/30 hover:shadow-md transition-all duration-200 cursor-pointer group animate-fade-up opacity-0"
+      className="bg-card rounded-xl border border-border p-3 sm:p-5 hover:border-primary/30 hover:shadow-md transition-all duration-200 cursor-pointer group animate-fade-up opacity-0"
       style={{ animationDelay: `${index * 60}ms`, animationFillMode: "forwards" }}
       onClick={onClick}
     >
-      <div className="flex items-start sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-          <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/15 transition-colors duration-200">
-            <FileText className="w-5 h-5 text-primary" />
+      <div className="flex items-center justify-between gap-2 sm:gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-primary/8 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/15 transition-colors duration-200">
+            <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
           </div>
           <div className="min-w-0">
-            <h3 className="font-semibold text-foreground truncate text-sm sm:text-base">{cv.title}</h3>
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1">
-              <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
+            <h3 className="font-semibold text-foreground truncate text-sm">{cv.title}</h3>
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-3 mt-0.5 sm:mt-1">
+              <span className="text-[11px] sm:text-xs text-muted-foreground bg-secondary px-1.5 sm:px-2 py-0.5 rounded-full">
                 {typeLabels[cv.type] || cv.type}
               </span>
-              <span className="text-xs text-muted-foreground flex items-center gap-1">
+              <span className="text-[11px] sm:text-xs text-muted-foreground flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
                 {format(new Date(cv.updated_at), 'MMM d, yyyy')}
               </span>
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
           {cv.ats_score !== null && <ATSBadge score={cv.ats_score} />}
           <Button
             variant="ghost"
             size="icon"
-            className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive h-8 w-8"
+            className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive h-7 w-7 sm:h-8 sm:w-8"
             onClick={onDelete}
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </Button>
         </div>
       </div>
