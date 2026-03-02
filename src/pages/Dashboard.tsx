@@ -193,25 +193,25 @@ const Dashboard = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="pt-20 pb-8 sm:pb-16 px-3 sm:px-6">
+      <main className="pt-20 sm:pt-24 pb-10 sm:pb-16 px-4 sm:px-6">
         <div className="container mx-auto max-w-6xl">
           {hasNoCvs ? (
             <EmptyState />
           ) : (
             <>
               {/* Welcome Header */}
-              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 sm:gap-4 mb-4 sm:mb-10">
+              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-10">
                 <div>
-                  <p className="text-xs sm:text-sm font-medium text-primary mb-0.5 sm:mb-1">Dashboard</p>
-                  <h1 className="text-xl sm:text-3xl md:text-4xl font-bold text-foreground font-display">
+                  <p className="text-xs sm:text-sm font-medium text-primary mb-1">Dashboard</p>
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground font-display">
                     Welcome back, {firstName}
                   </h1>
                 </div>
                 <CreateCVDropdown />
               </div>
 
-              {/* Stats Row */}
-              <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-10">
+              {/* Stats Row — horizontal scroll on mobile */}
+              <div className="flex gap-3 sm:grid sm:grid-cols-3 sm:gap-4 mb-6 sm:mb-10 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible scrollbar-none">
                 <StatCard
                   icon={<FileText className="w-4 h-4" />}
                   label="CVs this month"
@@ -232,14 +232,16 @@ const Dashboard = () => {
                 />
               </div>
 
-              <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
+              {/* CV List + ATS — vertical stack on mobile */}
+              <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-8">
                 {/* CV List */}
                 <div className="lg:col-span-2">
-                  <div className="flex items-center justify-between mb-3 sm:mb-5">
+                  <div className="flex items-center justify-between mb-4 sm:mb-5">
                     <h2 className="text-base sm:text-lg font-semibold text-foreground font-display">Your CVs</h2>
                     <span className="text-xs text-muted-foreground">{cvs.length} total</span>
                   </div>
-                  <div className="space-y-2 sm:space-y-3">
+                  {/* iOS grouped list style on mobile */}
+                  <div className="bg-card rounded-2xl border border-border overflow-hidden divide-y divide-border sm:bg-transparent sm:border-0 sm:rounded-none sm:divide-y-0 sm:space-y-3">
                     {cvs.slice(0, 5).map((cv, i) => (
                       <CVCard
                         key={cv.id}
@@ -247,6 +249,7 @@ const Dashboard = () => {
                         onClick={() => handleCVClick(cv)}
                         onDelete={(e) => handleDeleteClick(e, cv)}
                         index={i}
+                        grouped={true}
                       />
                     ))}
                   </div>
@@ -259,13 +262,13 @@ const Dashboard = () => {
 
                 {/* ATS Sidebar */}
                 <div>
-                  <div className="bg-card rounded-2xl border border-border p-6 shadow-sm">
-                    <h3 className="text-sm font-semibold text-foreground mb-5 flex items-center gap-2 font-display">
+                  <div className="bg-card rounded-2xl border border-border p-5 sm:p-6 shadow-sm">
+                    <h3 className="text-sm font-semibold text-foreground mb-4 sm:mb-5 flex items-center gap-2 font-display">
                       <Clock className="w-4 h-4 text-primary" />
                       ATS Score History
                     </h3>
                     {cvs.filter(cv => cv.ats_score !== null).length > 0 ? (
-                      <div className="space-y-4">
+                      <div className="space-y-3.5 sm:space-y-4">
                         {cvs.filter(cv => cv.ats_score !== null).slice(0, 4).map((cv) => (
                           <div key={cv.id} className="flex items-center justify-between gap-3">
                             <span className="text-sm text-muted-foreground truncate">{cv.title}</span>
@@ -274,7 +277,7 @@ const Dashboard = () => {
                         ))}
                       </div>
                     ) : (
-                      <div className="text-center py-8">
+                      <div className="text-center py-6 sm:py-8">
                         <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mx-auto mb-3">
                           <BarChart3 className="w-5 h-5 text-muted-foreground" />
                         </div>
@@ -338,14 +341,14 @@ const StatCard = ({
   value: string;
   accent: boolean;
 }) => (
-  <div className="bg-card rounded-xl sm:rounded-2xl border border-border p-3 sm:p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+  <div className="min-w-[110px] flex-1 bg-card rounded-2xl border border-border p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
     <div className="flex items-center gap-2 mb-2 sm:mb-3">
-      <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center ${accent ? 'bg-primary/10 text-primary' : 'bg-secondary text-muted-foreground'}`}>
+      <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${accent ? 'bg-primary/10 text-primary' : 'bg-secondary text-muted-foreground'}`}>
         {icon}
       </div>
     </div>
-    <p className={`text-lg sm:text-2xl font-bold font-display ${accent ? 'text-primary' : 'text-foreground'}`}>{value}</p>
-    <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">{label}</p>
+    <p className={`text-xl sm:text-2xl font-bold font-display ${accent ? 'text-primary' : 'text-foreground'}`}>{value}</p>
+    <p className="text-[11px] sm:text-xs text-muted-foreground mt-1">{label}</p>
   </div>
 );
 
@@ -369,11 +372,13 @@ const CVCard = ({
   onClick,
   onDelete,
   index,
+  grouped,
 }: {
   cv: CV;
   onClick: () => void;
   onDelete: (e: React.MouseEvent) => void;
   index: number;
+  grouped?: boolean;
 }) => {
   const typeLabels: Record<string, string> = {
     scratch: "From Scratch",
@@ -384,37 +389,37 @@ const CVCard = ({
 
   return (
     <div
-      className="bg-card rounded-xl border border-border p-3 sm:p-5 hover:border-primary/30 hover:shadow-md transition-all duration-200 cursor-pointer group animate-fade-up opacity-0"
+      className={`${grouped ? 'px-4 py-3.5 sm:px-5 sm:py-4 sm:bg-card sm:rounded-xl sm:border sm:border-border' : 'bg-card rounded-xl border border-border p-4 sm:p-5'} hover:bg-accent/50 sm:hover:border-primary/30 sm:hover:shadow-md transition-all duration-200 cursor-pointer group animate-fade-up opacity-0`}
       style={{ animationDelay: `${index * 60}ms`, animationFillMode: "forwards" }}
       onClick={onClick}
     >
-      <div className="flex items-center justify-between gap-2 sm:gap-3">
-        <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-primary/8 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/15 transition-colors duration-200">
-            <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+          <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/15 transition-colors duration-200">
+            <FileText className="w-5 h-5 text-primary" />
           </div>
           <div className="min-w-0">
-            <h3 className="font-semibold text-foreground truncate text-sm">{cv.title}</h3>
-            <div className="flex flex-wrap items-center gap-1.5 sm:gap-3 mt-0.5 sm:mt-1">
-              <span className="text-[11px] sm:text-xs text-muted-foreground bg-secondary px-1.5 sm:px-2 py-0.5 rounded-full">
+            <h3 className="font-semibold text-foreground truncate text-sm sm:text-base">{cv.title}</h3>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1">
+              <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
                 {typeLabels[cv.type] || cv.type}
               </span>
-              <span className="text-[11px] sm:text-xs text-muted-foreground flex items-center gap-1">
+              <span className="text-xs text-muted-foreground flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
                 {format(new Date(cv.updated_at), 'MMM d, yyyy')}
               </span>
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 flex-shrink-0">
           {cv.ats_score !== null && <ATSBadge score={cv.ats_score} />}
           <Button
             variant="ghost"
             size="icon"
-            className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive h-7 w-7 sm:h-8 sm:w-8"
+            className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive h-8 w-8"
             onClick={onDelete}
           >
-            <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <Trash2 className="w-4 h-4" />
           </Button>
         </div>
       </div>
