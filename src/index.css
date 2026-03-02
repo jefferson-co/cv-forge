@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -56,6 +56,12 @@
     --gradient-hero: linear-gradient(135deg, hsl(14 100% 60%) 0%, hsl(4 90% 58%) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(14 100% 60%) 0%, hsl(24 100% 55%) 100%);
     --gradient-subtle: linear-gradient(180deg, hsl(220 14% 96%) 0%, hsl(0 0% 100%) 100%);
+
+    /* Dark surface tokens for hero sections */
+    --surface-dark: 0 0% 5%;
+    --surface-dark-elevated: 0 0% 8%;
+    --surface-dark-foreground: 0 0% 95%;
+    --surface-dark-muted: 0 0% 55%;
 
     --shadow-sm: 0 1px 2px 0px hsl(0 0% 0% / 0.05);
     --shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -2px hsl(0 0% 0% / 0.1);
@@ -186,40 +192,73 @@
     box-shadow: var(--shadow-glow);
   }
 
+  /* Dark surface utilities */
+  .surface-dark {
+    background-color: hsl(var(--surface-dark));
+    color: hsl(var(--surface-dark-foreground));
+  }
+
+  /* Dot grid pattern — inspired by reference */
+  .dot-grid {
+    background-image: radial-gradient(circle, hsl(0 0% 100% / 0.07) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .dot-grid-dense {
+    background-image: radial-gradient(circle, hsl(0 0% 100% / 0.05) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+
+  .dot-grid-light {
+    background-image: radial-gradient(circle, hsl(0 0% 0% / 0.04) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* Gradient fade for dot grids */
+  .dot-grid-fade {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+  }
+
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
 
   .animate-fade-up {
-    animation: fadeUp 0.5s ease-out forwards;
+    animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
   .animate-fade-in {
-    animation: fadeIn 0.3s ease-out forwards;
+    animation: fadeIn 0.4s ease-out forwards;
   }
 
   .animate-scale-in {
-    animation: scaleIn 0.2s ease-out forwards;
+    animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
   .animate-slide-in-right {
     animation: slideInRight 0.3s ease-out forwards;
   }
+
+  .animate-pulse-slow {
+    animation: pulseSlow 3s ease-in-out infinite;
+  }
+
+  .stagger-1 { animation-delay: 0.1s; }
+  .stagger-2 { animation-delay: 0.2s; }
+  .stagger-3 { animation-delay: 0.3s; }
+  .stagger-4 { animation-delay: 0.4s; }
 }
 
 @keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
 }
 
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(24px);
   }
   to {
     opacity: 1;
@@ -228,12 +267,8 @@
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes scaleIn {
@@ -256,4 +291,9 @@
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+@keyframes pulseSlow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }

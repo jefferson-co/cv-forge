@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FileText, Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { Codepen, Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,7 +17,6 @@ const Signup = () => {
   const { signUp, user, loading } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already authenticated
   useEffect(() => {
     if (user && !loading) {
       navigate("/dashboard", { replace: true });
@@ -57,16 +56,18 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen bg-background flex">
-      {/* Left Panel - Visual */}
-      <div className="hidden lg:flex flex-1 gradient-hero items-center justify-center p-12">
-        <div className="max-w-md text-center">
-          <div className="w-20 h-20 rounded-2xl bg-accent/20 flex items-center justify-center mx-auto mb-8 animate-float">
-            <FileText className="w-10 h-10 text-accent" />
+      {/* Left Panel - Dark visual */}
+      <div className="hidden lg:flex flex-1 surface-dark relative overflow-hidden items-center justify-center p-12">
+        <div className="absolute inset-0 dot-grid dot-grid-fade pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-primary/5 blur-3xl pointer-events-none" />
+        <div className="relative z-10 max-w-md text-center">
+          <div className="w-16 h-16 rounded-2xl bg-primary/15 flex items-center justify-center mx-auto mb-8 shadow-glow animate-float">
+            <Codepen className="w-8 h-8 text-primary" />
           </div>
-          <h2 className="text-heading font-bold text-primary-foreground mb-4">
+          <h2 className="text-3xl font-bold text-[hsl(var(--surface-dark-foreground))] mb-4 font-display">
             Start crafting better CVs
           </h2>
-          <p className="text-body-lg text-primary-foreground/80">
+          <p className="text-lg text-[hsl(var(--surface-dark-muted))]">
             Join thousands of job seekers who've improved their CVs and landed more interviews.
           </p>
         </div>
@@ -74,33 +75,53 @@ const Signup = () => {
 
       {/* Right Panel - Form */}
       <div className="flex-1 flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md animate-fade-up">
           <div className="mb-8">
             <Link to="/" className="flex items-center gap-2 mb-12">
-              <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center">
-                <FileText className="w-4 h-4 text-accent-foreground" />
+              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+                <Codepen className="w-4 h-4 text-primary-foreground" />
               </div>
-              <span className="text-heading-sm font-semibold">Modiq</span>
+              <span className="text-lg font-semibold text-foreground font-display">Modiq</span>
             </Link>
             
-            <h1 className="text-heading-lg font-bold text-foreground mb-2">
+            <h1 className="text-3xl font-bold text-foreground mb-2 font-display">
               Create your account
             </h1>
-            <p className="text-body text-muted-foreground">
+            <p className="text-muted-foreground">
               Get started with your free account today
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Google button first */}
+          <Button variant="outline" size="lg" className="w-full h-12 mb-6" onClick={handleGoogleSignIn}>
+            <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+            </svg>
+            Continue with Google
+          </Button>
+
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-background px-3 text-muted-foreground">or</span>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="name">Full name</Label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   id="name"
                   type="text"
                   placeholder="John Doe"
-                  className="pl-10 h-12"
+                  className="pl-10 h-11"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
@@ -111,12 +132,12 @@ const Signup = () => {
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   id="email"
                   type="email"
                   placeholder="you@example.com"
-                  className="pl-10 h-12"
+                  className="pl-10 h-11"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -127,12 +148,12 @@ const Signup = () => {
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Create a strong password"
-                  className="pl-10 pr-10 h-12"
+                  className="pl-10 pr-10 h-11"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -142,65 +163,25 @@ const Signup = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              <p className="text-caption text-muted-foreground">
-                At least 8 characters with a number and symbol
+              <p className="text-xs text-muted-foreground">
+                At least 8 characters
               </p>
             </div>
 
-            <Button type="submit" variant="accent" size="lg" className="w-full" disabled={isLoading}>
+            <Button type="submit" size="lg" className="w-full h-11" disabled={isLoading}>
               {isLoading ? "Creating account..." : "Create account"}
-              {!isLoading && <ArrowRight className="w-4 h-4" />}
+              {!isLoading && <ArrowRight className="w-4 h-4 ml-2" />}
             </Button>
           </form>
 
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border" />
-              </div>
-              <div className="relative flex justify-center text-body-sm">
-                <span className="bg-background px-2 text-muted-foreground">or continue with</span>
-              </div>
-            </div>
-
-            <Button variant="outline" size="lg" className="w-full mt-4" onClick={handleGoogleSignIn}>
-              <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                />
-              </svg>
-              Continue with Google
-            </Button>
-          </div>
-
-          <p className="text-center text-body-sm text-muted-foreground mt-8">
+          <p className="text-center text-sm text-muted-foreground mt-8">
             Already have an account?{" "}
-            <Link to="/login" className="text-accent hover:underline font-medium">
+            <Link to="/login" className="text-primary hover:underline font-medium">
               Sign in
             </Link>
-          </p>
-
-          <p className="text-center text-caption text-muted-foreground mt-6">
-            By creating an account, you agree to our{" "}
-            <a href="#" className="text-accent hover:underline">Terms of Service</a>
-            {" "}and{" "}
-            <a href="#" className="text-accent hover:underline">Privacy Policy</a>
           </p>
         </div>
       </div>
