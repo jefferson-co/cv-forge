@@ -130,14 +130,14 @@ const Landing = () => {
 
           {/* Heading */}
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-[hsl(var(--surface-dark-foreground))] tracking-tight leading-[1.08] mb-6 font-display animate-fade-up opacity-0 stagger-2">
-            Build Job-Winning
+            Build <span className="text-primary">CV</span> that
             <br />
-            <span className="text-primary">CVs</span> in Minutes
+            Gets the Job
           </h1>
 
           {/* Subtext */}
           <p className="text-lg md:text-xl text-[hsl(var(--surface-dark-muted))] max-w-md mx-auto mb-12 animate-fade-up opacity-0 stagger-3">
-            AI-powered CV builder that helps you land more interviews.
+            Build CV, check ATS, and stay on top of your game.
           </p>
 
           {/* Buttons */}
