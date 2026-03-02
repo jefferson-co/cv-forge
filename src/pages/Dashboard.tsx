@@ -200,10 +200,10 @@ const Dashboard = () => {
           ) : (
             <>
               {/* Welcome Header */}
-              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-10">
                 <div>
                   <p className="text-sm font-medium text-primary mb-1">Dashboard</p>
-                  <h1 className="text-3xl md:text-4xl font-bold text-foreground font-display">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground font-display">
                     Welcome back, {firstName}
                   </h1>
                 </div>
@@ -211,7 +211,7 @@ const Dashboard = () => {
               </div>
 
               {/* Stats Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6 sm:mb-10">
                 <StatCard
                   icon={<FileText className="w-4 h-4" />}
                   label="CVs this month"
@@ -232,7 +232,7 @@ const Dashboard = () => {
                 />
               </div>
 
-              <div className="grid lg:grid-cols-3 gap-8">
+              <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
                 {/* CV List */}
                 <div className="lg:col-span-2">
                   <div className="flex items-center justify-between mb-5">
@@ -338,14 +338,14 @@ const StatCard = ({
   value: string;
   accent: boolean;
 }) => (
-  <div className="bg-card rounded-2xl border border-border p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
-    <div className="flex items-center gap-2 mb-3">
-      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${accent ? 'bg-primary/10 text-primary' : 'bg-secondary text-muted-foreground'}`}>
+  <div className="bg-card rounded-xl sm:rounded-2xl border border-border p-3 sm:p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+    <div className="flex items-center gap-2 mb-2 sm:mb-3">
+      <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center ${accent ? 'bg-primary/10 text-primary' : 'bg-secondary text-muted-foreground'}`}>
         {icon}
       </div>
     </div>
-    <p className={`text-2xl font-bold font-display ${accent ? 'text-primary' : 'text-foreground'}`}>{value}</p>
-    <p className="text-xs text-muted-foreground mt-1">{label}</p>
+    <p className={`text-lg sm:text-2xl font-bold font-display ${accent ? 'text-primary' : 'text-foreground'}`}>{value}</p>
+    <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">{label}</p>
   </div>
 );
 
