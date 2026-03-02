@@ -148,6 +148,12 @@ const Login = () => {
               </div>
             </div>
 
+            <div className="flex justify-end">
+              <Link to="/forgot-password" className="text-sm text-primary hover:underline font-medium">
+                Forgot password?
+              </Link>
+            </div>
+
             <Button type="submit" size="lg" className="w-full h-11" disabled={isLoading}>
               {isLoading ? "Signing in..." : "Sign in"}
               {!isLoading && <ArrowRight className="w-4 h-4 ml-2" />}
