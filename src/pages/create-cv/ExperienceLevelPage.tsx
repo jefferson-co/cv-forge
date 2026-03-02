@@ -16,9 +16,9 @@ const ExperienceLevelPage = () => {
 
   return (
     <CreateCVLayout backTo="/dashboard">
-      <div className="text-center mb-12">
-        <h1 className="text-3xl font-bold text-foreground mb-3">Let's build your CV</h1>
-        <p className="text-lg text-muted-foreground max-w-md mx-auto">
+      <div className="text-center mb-8 sm:mb-12">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">Let's build your CV</h1>
+        <p className="text-base sm:text-lg text-muted-foreground max-w-md mx-auto">
           First, tell us about your experience level so we can guide you better
         </p>
       </div>

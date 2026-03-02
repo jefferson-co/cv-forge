@@ -20,7 +20,7 @@ const ExperienceLevelCard = ({
     <button
       onClick={onClick}
       className={cn(
-        "group relative flex flex-col items-center p-8 rounded-xl border-2 transition-all duration-200",
+        "group relative flex flex-col items-center p-6 sm:p-8 rounded-xl border-2 transition-all duration-200",
         "bg-card hover:shadow-lg",
         isSelected 
           ? "border-primary shadow-glow" 
