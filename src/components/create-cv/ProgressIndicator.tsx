@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { Check } from "lucide-react";
 
 interface ProgressIndicatorProps {
   currentStep: number;
@@ -27,7 +28,7 @@ const ProgressIndicator = ({ currentStep, totalSteps, stepLabels }: ProgressIndi
                     : "bg-background border-muted-foreground/30 text-muted-foreground"
                 )}
               >
-                {step}
+                {isCompleted ? <Check className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={3} /> : step}
               </div>
               {/* Connector line */}
               {step < totalSteps && (
