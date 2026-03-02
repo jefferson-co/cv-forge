@@ -302,14 +302,14 @@ const ATSUploadPage = () => {
 
         {/* Action Bar */}
         <div className="flex items-center justify-between">
-          <Button variant="ghost" onClick={() => navigate('/dashboard')} className="gap-2">
+          <Button variant="ghost" onClick={() => navigate('/dashboard')} className="gap-2 hidden sm:inline-flex">
             <ArrowLeft className="w-4 h-4" />
             Back to Dashboard
           </Button>
           <Button 
             onClick={handleAnalyze} 
             disabled={!canProceed}
-            className="gap-2"
+            className="gap-2 w-full sm:w-auto"
             size="lg"
           >
             {isParsing ? (
