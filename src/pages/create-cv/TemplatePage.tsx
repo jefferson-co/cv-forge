@@ -79,13 +79,14 @@ const TemplatePage = () => {
       </div>
 
       {/* Action bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border py-4 px-6 z-40">
-        <div className="container mx-auto max-w-4xl flex items-center justify-between">
-          <Button variant="outline" onClick={() => navigate('/create-cv/preview')}>
+      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border py-3 px-4 sm:py-4 sm:px-6 z-40">
+        <div className="container mx-auto max-w-4xl flex items-center justify-between gap-2">
+          <Button variant="outline" size="sm" className="sm:size-default" onClick={() => navigate('/create-cv/preview')}>
             Back
           </Button>
-          <Button onClick={() => navigate('/create-cv/download')}>
-            Continue with {TEMPLATES.find(t => t.id === selectedTemplate)?.name}
+          <Button size="sm" className="sm:size-default" onClick={() => navigate('/create-cv/download')}>
+            <span className="hidden sm:inline">Continue with {TEMPLATES.find(t => t.id === selectedTemplate)?.name}</span>
+            <span className="sm:hidden">Continue</span>
           </Button>
         </div>
       </div>

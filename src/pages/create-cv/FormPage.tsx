@@ -132,31 +132,34 @@ const FormPage = () => {
       </form>
 
       {/* Sticky action bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border py-4 px-6 z-40">
-        <div className="container mx-auto max-w-4xl flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border py-3 px-4 sm:py-4 sm:px-6 z-40">
+        <div className="container mx-auto max-w-4xl flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
             <Button 
               variant="outline" 
+              size="sm"
+              className="sm:size-default"
               onClick={handleSaveDraft}
               disabled={isSaving}
             >
               {isSaving ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Saving...
+                  <span className="hidden sm:inline">Saving...</span>
+                  <span className="sm:hidden">...</span>
                 </>
               ) : (
                 'Save Draft'
               )}
             </Button>
             {lastSaved && (
-              <span className="text-sm text-muted-foreground flex items-center gap-1">
+              <span className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1 hidden sm:flex">
                 <Check className="w-4 h-4 text-green-500" />
                 Draft saved
               </span>
             )}
           </div>
-          <Button onClick={handleContinue}>
+          <Button size="sm" className="sm:size-default" onClick={handleContinue}>
             Continue
           </Button>
         </div>

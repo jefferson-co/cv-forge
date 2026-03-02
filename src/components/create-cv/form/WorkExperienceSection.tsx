@@ -187,7 +187,7 @@ Rewrite as bullet points (use • for bullets). Be concise but impactful. Focus 
                 </div>
 
                 <div className="md:col-span-2 space-y-2">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <Label>Responsibilities & Achievements *</Label>
                     <Button
                       type="button"
@@ -195,7 +195,7 @@ Rewrite as bullet points (use • for bullets). Be concise but impactful. Focus 
                       size="sm"
                       onClick={() => enhanceWithAI(exp)}
                       disabled={enhancingId === exp.id}
-                      className="gap-2"
+                      className="gap-2 w-full sm:w-auto"
                     >
                       {enhancingId === exp.id ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
