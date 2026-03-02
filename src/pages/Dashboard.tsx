@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Codepen, LogOut, User, ChevronDown, BarChart3, Clock, Calendar, Trash2, FileText, TrendingUp } from "lucide-react";
+import { Codepen, LogOut, User, ChevronDown, BarChart3, Clock, Calendar, Trash2, FileText, TrendingUp, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useNavigate } from "react-router-dom";
@@ -27,6 +27,7 @@ import { CreateCVDropdown } from "@/components/dashboard/CreateCVDropdown";
 import { CVPreviewModal } from "@/components/dashboard/CVPreviewModal";
 import { format } from "date-fns";
 import { CVFormData } from "@/types/cv";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface CV {
   id: string;
@@ -160,7 +161,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-secondary/30">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
-        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link to="/dashboard" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
               <Codepen className="w-4 h-4 text-primary-foreground" />
@@ -168,28 +169,31 @@ const Dashboard = () => {
             <span className="text-lg font-semibold text-foreground font-display">Modiq</span>
           </Link>
           
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-2 h-10">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <User className="w-4 h-4 text-primary" />
-                </div>
-                <span className="hidden sm:inline text-sm font-medium text-foreground">{displayName}</span>
-                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
-                <LogOut className="w-4 h-4 mr-2" />
-                Logout
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center gap-1 sm:gap-2">
+            <ThemeToggle />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center gap-1 sm:gap-2 h-10 px-2 sm:px-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <User className="w-4 h-4 text-primary" />
+                  </div>
+                  <span className="hidden sm:inline text-sm font-medium text-foreground">{displayName}</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer text-destructive">
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </nav>
 
       {/* Main Content */}
-      <main className="pt-24 pb-16 px-6">
+      <main className="pt-24 pb-16 px-4 sm:px-6">
         <div className="container mx-auto max-w-6xl">
           {hasNoCvs ? (
             <EmptyState />
@@ -348,10 +352,10 @@ const StatCard = ({
 const ATSBadge = ({ score }: { score: number }) => {
   const color =
     score >= 80
-      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+      ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800"
       : score >= 60
-      ? "bg-amber-50 text-amber-700 border-amber-200"
-      : "bg-red-50 text-red-700 border-red-200";
+      ? "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800"
+      : "bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800";
 
   return (
     <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${color}`}>
@@ -380,18 +384,18 @@ const CVCard = ({
 
   return (
     <div
-      className="bg-card rounded-xl border border-border p-5 hover:border-primary/30 hover:shadow-md transition-all duration-200 cursor-pointer group animate-fade-up opacity-0"
+      className="bg-card rounded-xl border border-border p-4 sm:p-5 hover:border-primary/30 hover:shadow-md transition-all duration-200 cursor-pointer group animate-fade-up opacity-0"
       style={{ animationDelay: `${index * 60}ms`, animationFillMode: "forwards" }}
       onClick={onClick}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4 min-w-0">
+      <div className="flex items-start sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
           <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/15 transition-colors duration-200">
             <FileText className="w-5 h-5 text-primary" />
           </div>
           <div className="min-w-0">
-            <h3 className="font-semibold text-foreground truncate">{cv.title}</h3>
-            <div className="flex items-center gap-3 mt-1">
+            <h3 className="font-semibold text-foreground truncate text-sm sm:text-base">{cv.title}</h3>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1">
               <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
                 {typeLabels[cv.type] || cv.type}
               </span>
@@ -402,12 +406,12 @@ const CVCard = ({
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+        <div className="flex items-center gap-2 flex-shrink-0">
           {cv.ats_score !== null && <ATSBadge score={cv.ats_score} />}
           <Button
             variant="ghost"
             size="icon"
-            className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive h-8 w-8"
+            className="opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive h-8 w-8"
             onClick={onDelete}
           >
             <Trash2 className="w-4 h-4" />
