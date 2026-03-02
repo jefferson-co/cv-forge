@@ -399,18 +399,18 @@ const ResultsPage = () => {
         )}
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-          <Button variant="ghost" onClick={() => navigate('/dashboard')} className="gap-2">
+        <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+          <Button variant="ghost" onClick={() => navigate('/dashboard')} className="w-full sm:w-auto gap-2">
             <ArrowLeft className="w-4 h-4" />
             Return to Dashboard
           </Button>
           
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={handleCheckAnother}>
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <Button variant="outline" onClick={handleCheckAnother} className="w-full sm:w-auto">
               Check Another CV
             </Button>
             {data.hasJobDescription && (
-              <Button onClick={handleTailorCV} className="gap-2">
+              <Button onClick={handleTailorCV} className="w-full sm:w-auto gap-2">
                 <Target className="w-4 h-4" />
                 Tailor CV to This Job
               </Button>
