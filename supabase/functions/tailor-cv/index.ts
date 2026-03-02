@@ -6,7 +6,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Maximum input sizes
 const MAX_JOB_DESCRIPTION_LENGTH = 20000;
 const MAX_CV_CONTENT_LENGTH = 100000;
 
@@ -16,7 +15,6 @@ serve(async (req) => {
   }
 
   try {
-    // Authentication check
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(
@@ -42,7 +40,6 @@ serve(async (req) => {
 
     const { jobDescription, originalCV } = await req.json();
 
-    // Input validation
     if (!jobDescription || typeof jobDescription !== 'string') {
       return new Response(
         JSON.stringify({ error: "Job description is required" }),
@@ -64,7 +61,6 @@ serve(async (req) => {
       );
     }
 
-    // Validate CV content size
     const cvContentString = JSON.stringify(originalCV);
     if (cvContentString.length > MAX_CV_CONTENT_LENGTH) {
       return new Response(
@@ -82,103 +78,126 @@ serve(async (req) => {
       );
     }
 
-    const systemPrompt = `You are an expert CV parser and career coach. Your PRIMARY task is to EXTRACT ALL INFORMATION from the CV text and then tailor it for the job.
+    const systemPrompt = `You are a world-class career strategist and ATS optimization expert with deep knowledge of modern recruiting technology (2025 standards).
 
-CRITICAL: NEVER RETURN EMPTY ARRAYS FOR EDUCATION OR SKILLS IF THEY EXIST IN THE CV TEXT.
+Your mission: Transform the candidate's CV to PERFECTLY match the target job description while maintaining 100% truthfulness.
 
-EXTRACTION RULES (FOLLOW EXACTLY):
-1. EDUCATION EXTRACTION:
-   - Search the ENTIRE document for educational information
-   - Look for keywords: Education, Academic, Qualification, Degree, University, College, School, Bachelor, Master, PhD, Diploma, Certificate, Training, Course
-   - ALSO look in summary/profile sections for mentions like "Graduated from...", "Studied at...", "Bachelor's degree in..."
-   - ALSO extract certifications, professional training, bootcamps, online courses
-   - If you see ANY institution name + degree/certification, extract it as an education entry
-   
-2. SKILLS EXTRACTION:
-   - Search EVERYWHERE in the document for skills
-   - Look in dedicated "Skills" sections
-   - ALSO extract skills mentioned in job descriptions: "Developed applications using Python" → Python is a skill
-   - ALSO extract skills from project descriptions
-   - ALSO extract skills from summary/profile sections
-   - Include: technical skills, programming languages, frameworks, tools, soft skills, languages spoken
-   - If the document mentions ANY skill, technology, or competency, add it to the skills array
+## CORE PRINCIPLES
 
-3. WORK EXPERIENCE EXTRACTION:
-   - Extract ALL jobs, internships, freelance work, volunteer positions
-   - Include job title, company, dates, and responsibilities
+1. **NEVER fabricate experience, skills, or qualifications** — only reframe, reorder, and emphasize what genuinely exists in the CV.
+2. **Mirror the job description language precisely** — ATS systems perform exact and semantic keyword matching. Use the EXACT terminology from the job posting (e.g., if they say "cross-functional collaboration", use that phrase, not "working with different teams").
+3. **Front-load relevance** — The most job-relevant content should appear first in every section.
+4. **Quantify everything possible** — Transform vague descriptions into measurable achievements. If the CV says "improved performance", keep it but note it should be quantified.
+5. **Optimize for both ATS and human readers** — Keywords for machines, compelling narratives for recruiters.
 
-TAILORING RULES:
-1. DO NOT invent information - only use what's in the CV
-2. Emphasize relevant experience for the target job
-3. Reorder skills to prioritize job requirements
-4. Add keywords from job description naturally
-5. Optimize for ATS without keyword stuffing`;
+## TAILORING STRATEGY
 
-    // The raw CV text is passed in the summary field from the parser
+### Professional Title
+- Match the exact job title from the posting when the candidate's experience supports it
+- Example: If applying for "Senior Product Designer" and they are a "Product Designer", use "Senior Product Designer" ONLY if their experience level justifies it
+
+### Summary/Profile
+- Lead with years of experience + core domain that matches the role
+- Include 3-5 of the most critical keywords from the job description naturally
+- Mention the specific industry/domain if relevant
+- End with a value proposition aligned to the role's key responsibility
+
+### Work Experience
+- Rewrite bullet points to emphasize responsibilities that mirror the job requirements
+- Use the STAR method: Situation → Task → Action → Result
+- Lead each bullet with a strong action verb (Led, Architected, Spearheaded, Drove, Orchestrated)
+- Include metrics wherever the original CV has them; flag where metrics could be added
+- Reorder bullets so the most job-relevant achievements come first
+
+### Skills
+- Reorder to place the job's required skills FIRST
+- Group into categories matching the job's requirements (e.g., "Programming Languages", "Frameworks", "Cloud & DevOps")
+- Include exact skill names from the job description (e.g., "React.js" not just "React" if the JD says "React.js")
+- Add skill variations the ATS might search for (e.g., both "JavaScript" and "JS")
+
+### Education
+- Highlight relevant coursework, projects, or thesis topics that align with the job
+- If certifications match job requirements, ensure they're prominently placed
+
+## MATCH SCORE CALCULATION
+Calculate an honest match score (0-100) based on:
+- Required skills coverage: How many required skills does the candidate have? (40% weight)
+- Experience level alignment: Does their seniority match? (20% weight)
+- Industry/domain relevance: Is their background in the same field? (20% weight)
+- Keyword density: How many job description keywords appear naturally in the tailored CV? (20% weight)
+
+Be HONEST with the score. A 95%+ should only be given if the candidate is a near-perfect match. Most tailored CVs should score 65-85%.
+
+## CHANGES TRACKING
+For EVERY modification you make, document it with:
+- What was changed (before/after)
+- WHY it was changed (which job requirement it addresses)
+- The type of change (added keyword, reworded bullet, reordered section, etc.)`;
+
     const rawCVText = originalCV.summary || JSON.stringify(originalCV, null, 2);
     
-    const userPrompt = `STEP 1: CAREFULLY READ AND EXTRACT ALL DATA FROM THIS CV TEXT.
-STEP 2: Tailor the extracted content for the job description.
-
-JOB DESCRIPTION:
+    const userPrompt = `## JOB DESCRIPTION TO TARGET
 ${jobDescription}
 
-===== CV TEXT TO PARSE (READ EVERY LINE) =====
+## CANDIDATE'S CURRENT CV DATA
+===== FULL CV TEXT =====
 ${rawCVText}
-===== END OF CV TEXT =====
+===== END CV TEXT =====
 
-EXTRACTED CONTACT INFO (use if text above doesn't contain them):
+## PRE-EXTRACTED CONTACT INFO (use as fallback)
 - Name: ${originalCV.fullName || 'Not detected'}
 - Email: ${originalCV.email || 'Not detected'}  
 - Phone: ${originalCV.phone || 'Not detected'}
+- Location: ${originalCV.location || 'Not detected'}
 - LinkedIn: ${originalCV.linkedinUrl || 'Not detected'}
+- Portfolio: ${originalCV.portfolioUrl || 'Not detected'}
 
-MANDATORY EXTRACTION CHECKLIST:
-☐ Did you find any degrees, certifications, or educational qualifications? → Add to "education" array
-☐ Did you find any skills, technologies, or competencies mentioned? → Add to "skills" array
-☐ Did you find any work history? → Add to "workExperience" array
-☐ Did you find any projects? → Add to "projects" array
+## YOUR TASK
 
-IMPORTANT: 
-- Read the CV text CHARACTER BY CHARACTER if needed
-- Education might be at the beginning, middle, or end
-- Skills might be listed as bullet points, comma-separated, or embedded in sentences
-- DO NOT return empty education/skills arrays if the CV contains them
+1. **ANALYZE** the job description thoroughly — identify required skills, preferred qualifications, key responsibilities, seniority level, industry, and cultural keywords.
 
-Return a JSON object with this exact structure:
+2. **EXTRACT** every piece of information from the CV — education (degrees, certs, courses), ALL skills (technical + soft), ALL work experience, projects, and custom sections. Read the ENTIRE document. Check summary sections for embedded skills/education mentions.
+
+3. **TAILOR** the CV content to maximize alignment with the job description using the strategies above.
+
+4. **SCORE** the match honestly based on the weighted criteria.
+
+5. **DOCUMENT** every change with clear rationale.
+
+Return a JSON object with this EXACT structure:
 {
   "jobAnalysis": {
-    "jobTitle": "job title from description",
-    "companyName": "company if mentioned",
+    "jobTitle": "exact title from job posting",
+    "companyName": "company name if mentioned",
     "requiredSkills": ["skill1", "skill2"],
     "preferredQualifications": ["qual1"],
     "keyResponsibilities": ["resp1"],
     "industryKeywords": ["keyword1"],
-    "experienceLevel": "entry/mid/senior",
-    "roleType": "technical/managerial/creative"
+    "experienceLevel": "entry/mid/senior/lead",
+    "roleType": "technical/managerial/creative/hybrid"
   },
   "tailoredCV": {
     "fullName": "from CV",
-    "professionalTitle": "tailored title",
+    "professionalTitle": "optimized title matching the job",
     "email": "from CV",
     "phone": "from CV",
     "location": "from CV",
-    "linkedinUrl": "from CV",
-    "portfolioUrl": "from CV",
+    "linkedinUrl": "from CV or empty string",
+    "portfolioUrl": "from CV or empty string",
     "photoUrl": "",
-    "summary": "tailored summary",
+    "summary": "2-4 sentence tailored professional summary packed with relevant keywords",
     "education": [
       {
         "id": "edu_1",
-        "degree": "MUST BE FILLED - degree or certification name",
-        "institution": "MUST BE FILLED - school/university name",
-        "location": "city/country if available",
-        "startDate": "",
-        "endDate": "year if available",
+        "degree": "degree name",
+        "institution": "school name",
+        "location": "location",
+        "startDate": "start date",
+        "endDate": "end date or year",
         "isCurrentlyStudying": false,
-        "gpa": "",
-        "coursework": "",
-        "description": ""
+        "gpa": "if available",
+        "coursework": "relevant coursework for the job",
+        "description": "relevant honors/activities"
       }
     ],
     "workExperience": [
@@ -186,35 +205,48 @@ Return a JSON object with this exact structure:
         "id": "work_1",
         "jobTitle": "position title",
         "company": "company name",
-        "location": "",
-        "startDate": "",
-        "endDate": "",
+        "location": "location",
+        "startDate": "start date",
+        "endDate": "end date",
         "isCurrentlyWorking": false,
-        "responsibilities": "bullet points of achievements"
+        "responsibilities": "• Achievement-focused bullet points using STAR method\\n• Each bullet starts with action verb\\n• Include metrics where available"
       }
     ],
-    "skills": ["LIST ALL SKILLS FOUND - technical, soft skills, languages, tools"],
-    "projects": [],
+    "skills": ["ordered by relevance to job - required skills first"],
+    "projects": [
+      {
+        "id": "proj_1",
+        "title": "project name",
+        "role": "role if applicable",
+        "date": "date",
+        "description": "tailored description emphasizing job-relevant aspects",
+        "link": "link if available"
+      }
+    ],
     "customSections": []
   },
   "changes": [
     {
       "id": "change_1",
-      "type": "modify",
-      "section": "summary",
-      "before": "original",
-      "after": "modified",
-      "explanation": "reason"
+      "type": "modify|add|reorder|remove",
+      "section": "summary|skills|workExperience|education|title",
+      "before": "original text",
+      "after": "modified text",
+      "explanation": "Changed because the job requires X, and this highlights the candidate's relevant experience in Y"
     }
   ],
   "matchScore": 75,
   "keywordsAdded": ["keyword1", "keyword2"]
 }
 
-FINAL CHECK BEFORE RESPONDING:
-- If education array is empty, RE-READ the CV text for any educational mentions
-- If skills array is empty, RE-READ the CV text for any skill mentions
-- Only return empty arrays if the CV GENUINELY has no education or skills`;
+## CRITICAL VALIDATION BEFORE RESPONDING
+- ☐ Education array is NOT empty if CV mentions any degrees/certs/courses
+- ☐ Skills array is NOT empty if CV mentions any skills/technologies
+- ☐ Work experience preserves ALL positions from original CV
+- ☐ No fabricated information — everything traces back to the original CV
+- ☐ Job description keywords are naturally integrated, not stuffed
+- ☐ Match score honestly reflects the candidate's fit (not inflated)
+- ☐ Every change has a clear rationale tied to a job requirement`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -223,12 +255,12 @@ FINAL CHECK BEFORE RESPONDING:
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
         ],
-        temperature: 0.7,
+        temperature: 0.4,
       }),
     });
 
@@ -263,17 +295,14 @@ FINAL CHECK BEFORE RESPONDING:
       );
     }
 
-    // Parse the JSON response from AI
     let parsedResponse;
     try {
-      // Extract JSON from potential markdown code blocks
       const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
       const jsonStr = jsonMatch ? jsonMatch[1].trim() : content.trim();
       parsedResponse = JSON.parse(jsonStr);
     } catch (parseError) {
-      console.error("Failed to parse AI response");
+      console.error("Failed to parse AI response:", content.substring(0, 500));
       
-      // Return a fallback response with the original CV
       parsedResponse = {
         jobAnalysis: {
           jobTitle: "Unknown Role",

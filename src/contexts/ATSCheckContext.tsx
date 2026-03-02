@@ -40,7 +40,7 @@ export interface ScoreBreakdown {
 
 export interface ATSAnalysisResult {
   overallScore: number;
-  scoreLabel: 'Needs Improvement' | 'Good' | 'Very Good' | 'Excellent';
+  scoreLabel: 'Needs Improvement' | 'Fair' | 'Good' | 'Very Good' | 'Excellent';
   summary: string;
   breakdown: ScoreBreakdown;
   criticalIssues: ATSFinding[];

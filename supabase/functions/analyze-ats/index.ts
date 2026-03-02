@@ -15,7 +15,6 @@ serve(async (req) => {
   }
 
   try {
-    // Authentication check
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(
@@ -41,7 +40,6 @@ serve(async (req) => {
 
     const { cvText, jobDescription } = await req.json();
 
-    // Input validation
     if (!cvText || typeof cvText !== 'string') {
       return new Response(
         JSON.stringify({ error: "CV text is required" }),
@@ -74,128 +72,175 @@ serve(async (req) => {
 
     const hasJobDescription = !!jobDescription && jobDescription.trim().length > 0;
 
-    const systemPrompt = `You are an expert ATS (Applicant Tracking System) analyzer. Your task is to analyze a CV/resume for ATS compatibility and provide detailed, actionable feedback.
+    const systemPrompt = `You are an elite ATS (Applicant Tracking System) compatibility analyst with deep expertise in how modern ATS platforms work in 2025.
 
-SCORING WEIGHTS:
-${hasJobDescription ? `
-- Format Compatibility: 30 points max
-- Structure & Organization: 25 points max
-- Keyword Match: 25 points max
-- Content Quality: 20 points max
-` : `
-- Format Compatibility: 35 points max
-- Structure & Organization: 35 points max
-- Content Quality: 30 points max
+## YOUR EXPERTISE INCLUDES:
+- How major ATS platforms parse documents (Workday, Greenhouse, Lever, iCIMS, Taleo, BambooHR, SAP SuccessFactors)
+- Modern AI-powered ATS systems that use NLP and semantic matching
+- Recruiter screening patterns and what triggers rejection vs advancement
+- Industry-specific CV standards across tech, finance, healthcare, creative, and more
+
+## SCORING METHODOLOGY (2025 Standards)
+
+${hasJobDescription ? `### WITH JOB DESCRIPTION (100 points total)
+
+**Format Compatibility (25 points)**
+- Clean, single-column layout (ATS struggles with multi-column): 0-5 pts
+- Standard fonts (Arial, Calibri, Garamond, Helvetica): 0-3 pts
+- No tables, text boxes, headers/footers, or images embedding text: 0-5 pts
+- Proper use of bullet points (•, -, not custom symbols): 0-3 pts
+- Consistent date formatting throughout: 0-3 pts
+- No special characters that break parsing (smart quotes, em dashes): 0-3 pts
+- Section headings are standard text (not images or graphics): 0-3 pts
+
+**Structure & Organization (20 points)**
+- Contact info at top with name, email, phone, location, LinkedIn: 0-4 pts
+- Standard section headings (Experience/Work History, Education, Skills): 0-4 pts
+- Reverse chronological order within sections: 0-3 pts
+- Professional Summary/Objective present: 0-3 pts
+- No orphaned content or unexplained gaps: 0-3 pts
+- Logical flow that matches recruiter expectations: 0-3 pts
+
+**Keyword & Skills Match (35 points)** — THIS IS THE MOST CRITICAL SECTION
+- Hard skills from job requirements found verbatim: 0-10 pts
+- Technical tools/platforms mentioned in JD present in CV: 0-8 pts
+- Industry-specific terminology and jargon: 0-5 pts
+- Soft skills alignment (leadership, collaboration, etc.): 0-4 pts
+- Job title alignment (exact or close semantic match): 0-4 pts
+- Certification/qualification requirements met: 0-4 pts
+
+**Content Quality (20 points)**
+- Achievement-oriented bullets (not just responsibilities): 0-5 pts
+- Quantified results (numbers, percentages, dollar amounts): 0-5 pts
+- Strong action verbs (Led, Architected, Drove, Optimized): 0-4 pts
+- No buzzwords/filler (team player, hard worker, detail-oriented): 0-3 pts
+- Appropriate length (1-2 pages for most roles): 0-3 pts
+` : `### WITHOUT JOB DESCRIPTION (100 points total)
+
+**Format Compatibility (30 points)**
+- Clean, single-column layout: 0-6 pts
+- Standard fonts: 0-4 pts
+- No tables, text boxes, headers/footers, or images embedding text: 0-6 pts
+- Proper bullet points: 0-4 pts
+- Consistent date formatting: 0-4 pts
+- No special characters that break parsing: 0-3 pts
+- Standard section headings: 0-3 pts
+
+**Structure & Organization (35 points)**
+- Contact info completeness (name, email, phone, location, LinkedIn): 0-7 pts
+- Standard section headings: 0-7 pts
+- Reverse chronological order: 0-5 pts
+- Professional Summary present: 0-5 pts
+- Skills section with categorized skills: 0-5 pts
+- No unexplained employment gaps: 0-3 pts
+- Logical, recruiter-friendly flow: 0-3 pts
+
+**Content Quality (35 points)**
+- Achievement-oriented bullets: 0-8 pts
+- Quantified results: 0-8 pts
+- Strong action verbs: 0-6 pts
+- No buzzwords/filler: 0-5 pts
+- Appropriate length: 0-4 pts
+- Professional tone and grammar: 0-4 pts
 `}
 
-ANALYSIS CRITERIA:
+## SCORING CALIBRATION
+- 0-40: "Needs Improvement" — Major ATS compatibility issues, likely auto-rejected
+- 41-60: "Fair" — Some ATS issues, may pass basic screening but weak competitive position
+- 61-75: "Good" — Passes most ATS systems but has room for optimization
+- 76-88: "Very Good" — Strong ATS compatibility, competitive candidate
+- 89-100: "Excellent" — Near-perfect ATS optimization (rare, requires excellent keyword match + formatting)
 
-FORMAT COMPATIBILITY:
-- File format (PDF is generally best, DOCX also works)
-- Font usage (standard fonts like Arial, Calibri, Times New Roman are best)
-- Tables, images, graphics (these cause ATS parsing issues)
-- Headers/footers (often not read by ATS)
-- Text boxes and columns (can cause reading order issues)
-- Special characters and symbols
+**CALIBRATION RULES:**
+- A CV with NO quantified achievements should NOT score above 75
+- A CV missing 3+ required skills from the JD should NOT score above 65
+- A CV with formatting issues (tables, graphics) should NOT score above 60
+- Be STRICT but FAIR — most real-world CVs score 50-75
 
-STRUCTURE & ORGANIZATION:
-- Standard section headings (Work Experience, Education, Skills, etc.)
-- Contact information placement and completeness
-- Date format consistency
-- Bullet point usage
-- Logical organization
+## FINDING SEVERITY LEVELS
+- **critical**: Will cause ATS rejection or major parsing failure (missing contact info, tables destroying content, no relevant keywords)
+- **warning**: Reduces ATS score or recruiter engagement (weak bullets, missing quantification, suboptimal ordering)
+- **info**: Nice-to-have improvements (minor formatting tweaks, additional keywords)
+- **pass**: Things done correctly (acknowledge good practices)
 
-KEYWORD MATCH (if job description provided):
-- Required skills presence
-- Technical keywords
-- Industry-specific terms
-- Experience level match
-- Role-specific responsibilities
+## BEFORE/AFTER EXAMPLES
+Provide SPECIFIC examples using the candidate's ACTUAL CV content — not generic templates. Show exactly how their weak bullets/sections could be improved.`;
 
-CONTENT QUALITY:
-- Action verbs usage (Led, Developed, Achieved, Implemented)
-- Quantifiable achievements (numbers, percentages, metrics)
-- Avoiding buzzwords and filler (team player, hard worker)
-- Professional summary quality
-- Relevance of content
+    const userPrompt = `## CV TO ANALYZE
+===== CV TEXT =====
+${cvText}
+===== END CV TEXT =====
 
-SEVERITY LEVELS:
-- critical: Major issues that will likely cause ATS rejection
-- warning: Issues that may negatively impact ATS parsing
-- info: Suggestions for improvement
-- pass: Good practices detected
+${hasJobDescription ? `## TARGET JOB DESCRIPTION
+===== JOB DESCRIPTION =====
+${jobDescription}
+===== END JOB DESCRIPTION =====
+
+Perform a thorough keyword gap analysis. For EVERY required skill, tool, and qualification in the job description, check whether it appears in the CV. Be exhaustive.
+` : 'No job description provided. Perform a comprehensive general ATS compatibility analysis against industry best practices.'}
+
+## INSTRUCTIONS
+1. Score each category by evaluating EVERY sub-criterion listed in the scoring methodology
+2. Provide at least 4-6 findings per category with specific, actionable feedback
+3. Include at least 3 before/after examples using the candidate's ACTUAL content
+4. Be honest and calibrated — don't inflate scores
+${hasJobDescription ? '5. For keyword analysis, list EVERY important keyword from the JD and whether it was found' : ''}
 
 Return a JSON object with this exact structure:
 {
   "overallScore": <number 0-100>,
-  "scoreLabel": "<'Needs Improvement' | 'Good' | 'Very Good' | 'Excellent'>",
-  "summary": "<2-3 sentence overall assessment>",
+  "scoreLabel": "<Needs Improvement|Fair|Good|Very Good|Excellent>",
+  "summary": "<3-4 sentence assessment — be specific about strengths AND weaknesses>",
   "breakdown": {
     "formatCompatibility": {
       "score": <number>,
-      "maxScore": ${hasJobDescription ? 30 : 35},
+      "maxScore": ${hasJobDescription ? 25 : 30},
       "findings": [
         {
           "id": "format_1",
           "severity": "<critical|warning|info|pass>",
-          "title": "<short title>",
-          "description": "<detailed description>",
-          "recommendation": "<actionable fix, optional for pass>"
+          "title": "<concise title>",
+          "description": "<specific observation about THIS CV>",
+          "recommendation": "<exact action to take>"
         }
       ]
     },
     "structureOrganization": {
       "score": <number>,
-      "maxScore": ${hasJobDescription ? 25 : 35},
-      "findings": [<same structure as above>]
+      "maxScore": ${hasJobDescription ? 20 : 35},
+      "findings": [{"id":"","severity":"","title":"","description":"","recommendation":""}]
     },
     ${hasJobDescription ? `"keywordMatch": {
       "score": <number>,
-      "maxScore": 25,
-      "findings": [<same structure>],
+      "maxScore": 35,
+      "findings": [{"id":"","severity":"","title":"","description":"","recommendation":""}],
       "keywords": [
-        {"keyword": "<keyword>", "found": <boolean>, "location": "<where found or empty>"}
+        {"keyword": "<exact keyword from JD>", "found": <boolean>, "location": "<section where found, or empty>", "importance": "<required|preferred|nice-to-have>"}
       ]
     },` : ''}
     "contentQuality": {
       "score": <number>,
-      "maxScore": ${hasJobDescription ? 20 : 30},
-      "findings": [<same structure>]
+      "maxScore": ${hasJobDescription ? 20 : 35},
+      "findings": [{"id":"","severity":"","title":"","description":"","recommendation":""}]
     }
   },
-  "criticalIssues": [
-    <subset of most important findings with severity 'critical'>
-  ],
+  "criticalIssues": [<subset of findings with severity "critical" — these should be fixed FIRST>],
   "beforeAfterExamples": [
     {
       "title": "<what is being improved>",
-      "before": "<problematic text from CV or generic example>",
-      "after": "<improved version>"
+      "before": "<ACTUAL text from the candidate's CV>",
+      "after": "<improved version with explanation>"
     }
   ]
 }
 
-SCORE LABELS:
-- 0-50: "Needs Improvement"
-- 51-75: "Good"
-- 76-90: "Very Good"
-- 91-100: "Excellent"`;
-
-    const userPrompt = `Analyze this CV for ATS compatibility:
-
-===== CV TEXT =====
-${cvText}
-===== END CV TEXT =====
-
-${hasJobDescription ? `
-===== JOB DESCRIPTION =====
-${jobDescription}
-===== END JOB DESCRIPTION =====
-
-Analyze how well this CV matches the job requirements and extract relevant keywords.
-` : 'No job description provided. Perform a general ATS compatibility analysis.'}
-
-Provide comprehensive feedback with specific, actionable recommendations. Include at least 2-3 before/after examples showing how to improve weak areas.`;
+VALIDATION CHECKLIST:
+- ☐ Overall score = sum of all category scores
+- ☐ Each category score ≤ its maxScore
+- ☐ Score label matches the calibration ranges
+- ☐ At least 3 before/after examples using REAL content from the CV
+- ☐ Findings are specific to THIS CV, not generic advice
+${hasJobDescription ? '- ☐ Keywords array covers ALL important terms from the job description' : ''}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -204,12 +249,12 @@ Provide comprehensive feedback with specific, actionable recommendations. Includ
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
         ],
-        temperature: 0.7,
+        temperature: 0.3,
       }),
     });
 
@@ -244,38 +289,35 @@ Provide comprehensive feedback with specific, actionable recommendations. Includ
       );
     }
 
-    // Parse the JSON response from AI
     let parsedResponse;
     try {
-      // Extract JSON from potential markdown code blocks
       const jsonMatch = content.match(/```(?:json)?\s*([\s\S]*?)```/);
       const jsonStr = jsonMatch ? jsonMatch[1].trim() : content.trim();
       parsedResponse = JSON.parse(jsonStr);
     } catch (parseError) {
-      console.error("Failed to parse AI response:", parseError);
+      console.error("Failed to parse AI response:", content.substring(0, 500));
       
-      // Return a fallback response
       parsedResponse = {
-        overallScore: 65,
-        scoreLabel: "Good",
-        summary: "We were able to analyze your CV but encountered some parsing issues. The results shown are based on our best assessment.",
+        overallScore: 60,
+        scoreLabel: "Fair",
+        summary: "We were able to analyze your CV but encountered some parsing issues. The results shown are based on our best assessment. Please try again for a more detailed analysis.",
         breakdown: {
           formatCompatibility: {
-            score: hasJobDescription ? 20 : 23,
-            maxScore: hasJobDescription ? 30 : 35,
+            score: hasJobDescription ? 16 : 20,
+            maxScore: hasJobDescription ? 25 : 30,
             findings: [
               {
                 id: "format_fallback",
                 severity: "info",
                 title: "Format Analysis",
                 description: "Your CV format appears generally compatible with ATS systems.",
-                recommendation: "Ensure you're using standard fonts and avoid complex formatting."
+                recommendation: "Ensure you're using standard fonts and avoid complex formatting like tables and text boxes."
               }
             ]
           },
           structureOrganization: {
-            score: hasJobDescription ? 18 : 25,
-            maxScore: hasJobDescription ? 25 : 35,
+            score: hasJobDescription ? 14 : 24,
+            maxScore: hasJobDescription ? 20 : 35,
             findings: [
               {
                 id: "structure_fallback",
@@ -288,8 +330,8 @@ Provide comprehensive feedback with specific, actionable recommendations. Includ
           },
           ...(hasJobDescription ? {
             keywordMatch: {
-              score: 15,
-              maxScore: 25,
+              score: 18,
+              maxScore: 35,
               findings: [
                 {
                   id: "keywords_fallback",
@@ -303,8 +345,8 @@ Provide comprehensive feedback with specific, actionable recommendations. Includ
             }
           } : {}),
           contentQuality: {
-            score: hasJobDescription ? 12 : 17,
-            maxScore: hasJobDescription ? 20 : 30,
+            score: hasJobDescription ? 12 : 16,
+            maxScore: hasJobDescription ? 20 : 35,
             findings: [
               {
                 id: "content_fallback",
@@ -321,12 +363,12 @@ Provide comprehensive feedback with specific, actionable recommendations. Includ
           {
             title: "Action Verbs",
             before: "Responsible for managing a team",
-            after: "Led a team of 5 developers to deliver 3 major projects on time"
+            after: "Led a cross-functional team of 5 engineers, delivering 3 major product releases ahead of schedule"
           },
           {
             title: "Quantifiable Achievements",
             before: "Improved website performance",
-            after: "Optimized website performance, reducing load time by 40%"
+            after: "Optimized website performance by implementing lazy loading and CDN caching, reducing page load time by 40% and improving Core Web Vitals scores"
           }
         ]
       };
@@ -335,12 +377,32 @@ Provide comprehensive feedback with specific, actionable recommendations. Includ
     // Ensure keywordMatch exists if job description was provided
     if (hasJobDescription && !parsedResponse.breakdown.keywordMatch) {
       parsedResponse.breakdown.keywordMatch = {
-        score: 12,
-        maxScore: 25,
+        score: 15,
+        maxScore: 35,
         findings: [],
         keywords: []
       };
     }
+
+    // Validate score consistency
+    const breakdown = parsedResponse.breakdown;
+    const calculatedScore = (breakdown.formatCompatibility?.score || 0) +
+      (breakdown.structureOrganization?.score || 0) +
+      (breakdown.keywordMatch?.score || 0) +
+      (breakdown.contentQuality?.score || 0);
+    
+    // Use calculated score if it differs significantly from reported score
+    if (Math.abs(calculatedScore - parsedResponse.overallScore) > 5) {
+      parsedResponse.overallScore = calculatedScore;
+    }
+
+    // Ensure score label matches score
+    const score = parsedResponse.overallScore;
+    if (score <= 40) parsedResponse.scoreLabel = "Needs Improvement";
+    else if (score <= 60) parsedResponse.scoreLabel = "Fair";
+    else if (score <= 75) parsedResponse.scoreLabel = "Good";
+    else if (score <= 88) parsedResponse.scoreLabel = "Very Good";
+    else parsedResponse.scoreLabel = "Excellent";
 
     return new Response(
       JSON.stringify(parsedResponse),
