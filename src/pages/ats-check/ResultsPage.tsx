@@ -383,13 +383,13 @@ const ResultsPage = () => {
                 <div key={idx} className="space-y-2">
                   <p className="font-medium text-foreground">{example.title}</p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="p-3 rounded-lg bg-red-50 border border-red-200">
-                      <p className="text-xs text-red-600 font-medium mb-1">❌ Before</p>
-                      <p className="text-sm text-foreground">{example.before}</p>
+                    <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800">
+                      <p className="text-xs text-red-600 dark:text-red-400 font-medium mb-1">❌ Before</p>
+                      <p className="text-sm text-red-900 dark:text-red-200">{example.before}</p>
                     </div>
-                    <div className="p-3 rounded-lg bg-green-50 border border-green-200">
-                      <p className="text-xs text-green-600 font-medium mb-1">✓ After</p>
-                      <p className="text-sm text-foreground">{example.after}</p>
+                    <div className="p-3 rounded-lg bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-800">
+                      <p className="text-xs text-green-600 dark:text-green-400 font-medium mb-1">✓ After</p>
+                      <p className="text-sm text-green-900 dark:text-green-200">{example.after}</p>
                     </div>
                   </div>
                 </div>
