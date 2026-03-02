@@ -210,8 +210,8 @@ const Dashboard = () => {
                 <CreateCVDropdown />
               </div>
 
-              {/* Stats Row — horizontal scroll on mobile */}
-              <div className="flex gap-3 sm:grid sm:grid-cols-3 sm:gap-4 mb-6 sm:mb-10 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible scrollbar-none">
+              {/* Stats Row — vertical on mobile, horizontal on desktop */}
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4 mb-6 sm:mb-10">
                 <StatCard
                   icon={<FileText className="w-4 h-4" />}
                   label="CVs this month"
@@ -341,14 +341,16 @@ const StatCard = ({
   value: string;
   accent: boolean;
 }) => (
-  <div className="min-w-[110px] flex-1 bg-card rounded-2xl border border-border p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
-    <div className="flex items-center gap-2 mb-2 sm:mb-3">
-      <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${accent ? 'bg-primary/10 text-primary' : 'bg-secondary text-muted-foreground'}`}>
+  <div className="bg-card rounded-2xl border border-border p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+    <div className="flex items-center gap-3 sm:block">
+      <div className={`w-10 h-10 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center flex-shrink-0 sm:mb-3 ${accent ? 'bg-primary/10 text-primary' : 'bg-secondary text-muted-foreground'}`}>
         {icon}
       </div>
+      <div>
+        <p className={`text-lg sm:text-2xl font-bold font-display ${accent ? 'text-primary' : 'text-foreground'}`}>{value}</p>
+        <p className="text-xs text-muted-foreground mt-0.5 sm:mt-1">{label}</p>
+      </div>
     </div>
-    <p className={`text-xl sm:text-2xl font-bold font-display ${accent ? 'text-primary' : 'text-foreground'}`}>{value}</p>
-    <p className="text-[11px] sm:text-xs text-muted-foreground mt-1">{label}</p>
   </div>
 );
 
