@@ -2,12 +2,14 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CVFormProvider } from "@/contexts/CVFormContext";
 import { TailorCVProvider } from "@/contexts/TailorCVContext";
 import { ATSCheckProvider } from "@/contexts/ATSCheckContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { PageTransition } from "@/components/PageTransition";
 import Landing from "./pages/Landing";
 import About from "./pages/About";
 import Login from "./pages/Login";
@@ -41,6 +43,41 @@ import ATSResultsPage from "./pages/ats-check/ResultsPage";
 
 const queryClient = new QueryClient();
 
+const AnimatedRoutes = () => {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<PageTransition><Landing /></PageTransition>} />
+        <Route path="/about" element={<PageTransition><About /></PageTransition>} />
+        <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
+        <Route path="/signup" element={<PageTransition><Signup /></PageTransition>} />
+        <Route path="/dashboard" element={<ProtectedRoute><PageTransition><Dashboard /></PageTransition></ProtectedRoute>} />
+        <Route path="/create" element={<ProtectedRoute><PageTransition><CreateCV /></PageTransition></ProtectedRoute>} />
+        <Route path="/create-cv" element={<ProtectedRoute><PageTransition><ExperienceLevelPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/create-cv/form" element={<ProtectedRoute><PageTransition><FormPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/create-cv/preview" element={<ProtectedRoute><PageTransition><PreviewPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/create-cv/template" element={<ProtectedRoute><PageTransition><TemplatePage /></PageTransition></ProtectedRoute>} />
+        <Route path="/create-cv/download" element={<ProtectedRoute><PageTransition><DownloadPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/tailor-cv" element={<ProtectedRoute><PageTransition><TailorUploadPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/tailor-cv/processing" element={<ProtectedRoute><PageTransition><TailorProcessingPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/tailor-cv/comparison" element={<ProtectedRoute><PageTransition><TailorComparisonPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/tailor-cv/edit" element={<ProtectedRoute><PageTransition><TailorEditPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/tailor-cv/country" element={<ProtectedRoute><PageTransition><TailorCountryPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/tailor-cv/template" element={<ProtectedRoute><PageTransition><TailorTemplatePage /></PageTransition></ProtectedRoute>} />
+        <Route path="/tailor-cv/download" element={<ProtectedRoute><PageTransition><TailorDownloadPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/tailor" element={<ProtectedRoute><PageTransition><TailorUploadPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/convert" element={<ProtectedRoute><PageTransition><ConvertCV /></PageTransition></ProtectedRoute>} />
+        <Route path="/ats-check" element={<ProtectedRoute><PageTransition><ATSUploadPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/ats-check/analyzing" element={<ProtectedRoute><PageTransition><ATSAnalyzingPage /></PageTransition></ProtectedRoute>} />
+        <Route path="/ats-check/results" element={<ProtectedRoute><PageTransition><ATSResultsPage /></PageTransition></ProtectedRoute>} />
+        <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+      </Routes>
+    </AnimatePresence>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
@@ -48,173 +85,10 @@ const App = () => (
         <TailorCVProvider>
           <ATSCheckProvider>
             <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-              <Route path="/" element={<Landing />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/create"
-                  element={
-                    <ProtectedRoute>
-                      <CreateCV />
-                    </ProtectedRoute>
-                  }
-                />
-                {/* Create CV Flow */}
-                <Route
-                  path="/create-cv"
-                  element={
-                    <ProtectedRoute>
-                      <ExperienceLevelPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/create-cv/form"
-                  element={
-                    <ProtectedRoute>
-                      <FormPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/create-cv/preview"
-                  element={
-                    <ProtectedRoute>
-                      <PreviewPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/create-cv/template"
-                  element={
-                    <ProtectedRoute>
-                      <TemplatePage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/create-cv/download"
-                  element={
-                    <ProtectedRoute>
-                      <DownloadPage />
-                    </ProtectedRoute>
-                  }
-                />
-                {/* Tailor CV Flow */}
-                <Route
-                  path="/tailor-cv"
-                  element={
-                    <ProtectedRoute>
-                      <TailorUploadPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/tailor-cv/processing"
-                  element={
-                    <ProtectedRoute>
-                      <TailorProcessingPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/tailor-cv/comparison"
-                  element={
-                    <ProtectedRoute>
-                      <TailorComparisonPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/tailor-cv/edit"
-                  element={
-                    <ProtectedRoute>
-                      <TailorEditPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/tailor-cv/country"
-                  element={
-                    <ProtectedRoute>
-                      <TailorCountryPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/tailor-cv/template"
-                  element={
-                    <ProtectedRoute>
-                      <TailorTemplatePage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/tailor-cv/download"
-                  element={
-                    <ProtectedRoute>
-                      <TailorDownloadPage />
-                    </ProtectedRoute>
-                  }
-                />
-                {/* Legacy route - redirect to new flow */}
-                <Route
-                  path="/tailor"
-                  element={
-                    <ProtectedRoute>
-                      <TailorUploadPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/convert"
-                  element={
-                    <ProtectedRoute>
-                      <ConvertCV />
-                    </ProtectedRoute>
-                  }
-                />
-                {/* ATS Check Flow */}
-                <Route
-                  path="/ats-check"
-                  element={
-                    <ProtectedRoute>
-                      <ATSUploadPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/ats-check/analyzing"
-                  element={
-                    <ProtectedRoute>
-                      <ATSAnalyzingPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/ats-check/results"
-                  element={
-                    <ProtectedRoute>
-                      <ATSResultsPage />
-                    </ProtectedRoute>
-                  }
-                />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <AnimatedRoutes />
               </BrowserRouter>
             </TooltipProvider>
           </ATSCheckProvider>
