@@ -273,13 +273,13 @@ const TailorDownloadPage = () => {
           {/* CV Preview */}
           <Card className="mb-8">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <span className="text-sm text-muted-foreground">Format:</span>
-                  <span className="ml-2 font-medium">{countryData?.flag} {countryData?.name}</span>
-                  <span className="mx-2 text-muted-foreground">•</span>
-                  <span className="text-sm text-muted-foreground">Template:</span>
-                  <span className="ml-2 font-medium">{templateData?.name}</span>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                <div className="flex flex-wrap items-center gap-1 text-sm">
+                  <span className="text-muted-foreground">Format:</span>
+                  <span className="font-medium">{countryData?.flag} {countryData?.name}</span>
+                  <span className="mx-1 text-muted-foreground">•</span>
+                  <span className="text-muted-foreground">Template:</span>
+                  <span className="font-medium">{templateData?.name}</span>
                 </div>
                 <Button variant="outline" size="sm" onClick={() => navigate('/tailor-cv/edit')}>
                   <Pencil className="w-4 h-4 mr-2" />

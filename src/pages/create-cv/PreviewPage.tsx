@@ -188,11 +188,11 @@ ${formData.projects.map(p => `${p.title}${p.role ? ` (${p.role})` : ''}\n${p.des
 
       {/* Action bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border py-3 px-4 sm:py-4 sm:px-6 z-40">
-        <div className="container mx-auto max-w-4xl flex items-center justify-between gap-2">
-          <Button variant="outline" size="sm" className="sm:size-default" onClick={() => navigate('/create-cv/form')}>
+        <div className="container mx-auto max-w-4xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <Button variant="outline" size="sm" className="w-full sm:w-auto sm:size-default" onClick={() => navigate('/create-cv/form')}>
             Back to Edit
           </Button>
-          <Button size="sm" className="sm:size-default" onClick={() => navigate('/create-cv/template')}>
+          <Button size="sm" className="w-full sm:w-auto sm:size-default" onClick={() => navigate('/create-cv/template')}>
             <span className="hidden sm:inline">Select {selectedCountryData?.name} Format</span>
             <span className="sm:hidden">Continue</span>
           </Button>

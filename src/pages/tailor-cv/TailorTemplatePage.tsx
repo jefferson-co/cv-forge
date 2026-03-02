@@ -86,13 +86,13 @@ const TailorTemplatePage = () => {
       </div>
 
       {/* Action bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border py-4 px-6 z-40">
-        <div className="container mx-auto max-w-4xl flex items-center justify-between">
-          <Button variant="outline" onClick={() => navigate('/tailor-cv/country')} className="gap-2">
+      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border py-3 px-4 sm:py-4 sm:px-6 z-40">
+        <div className="container mx-auto max-w-4xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <Button variant="outline" onClick={() => navigate('/tailor-cv/country')} className="w-full sm:w-auto gap-2">
             <ArrowLeft className="w-4 h-4" />
             Back
           </Button>
-          <Button onClick={() => navigate('/tailor-cv/download')}>
+          <Button onClick={() => navigate('/tailor-cv/download')} className="w-full sm:w-auto">
             Continue with {TEMPLATES.find(t => t.id === data.selectedTemplate)?.name}
           </Button>
         </div>

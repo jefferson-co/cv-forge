@@ -102,11 +102,11 @@ ${content.customSections?.length > 0
           </div>
         </ScrollArea>
 
-        <div className="flex justify-end gap-3 pt-4 border-t flex-shrink-0">
-          <Button variant="outline" onClick={onClose}>
+        <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t flex-shrink-0">
+          <Button variant="outline" onClick={onClose} className="w-full sm:w-auto">
             Close
           </Button>
-          <Button onClick={() => onEdit(cv.id)} className="gap-2">
+          <Button onClick={() => onEdit(cv.id)} className="w-full sm:w-auto gap-2">
             <Pencil className="w-4 h-4" />
             Edit CV
           </Button>
