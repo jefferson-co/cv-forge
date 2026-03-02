@@ -1,4 +1,4 @@
-import { Plus, ChevronDown, FileText, Target, Globe, Shield } from "lucide-react";
+import { Plus, ChevronDown, FileText, Target, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
