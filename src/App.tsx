@@ -14,6 +14,8 @@ import Landing from "./pages/Landing";
 import About from "./pages/About";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import CreateCV from "./pages/CreateCV";
 import TailorCV from "./pages/TailorCV";
@@ -53,6 +55,8 @@ const AnimatedRoutes = () => {
         <Route path="/about" element={<PageTransition><About /></PageTransition>} />
         <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
         <Route path="/signup" element={<PageTransition><Signup /></PageTransition>} />
+        <Route path="/forgot-password" element={<PageTransition><ForgotPassword /></PageTransition>} />
+        <Route path="/reset-password" element={<PageTransition><ResetPassword /></PageTransition>} />
         <Route path="/dashboard" element={<ProtectedRoute><PageTransition><Dashboard /></PageTransition></ProtectedRoute>} />
         <Route path="/create" element={<ProtectedRoute><PageTransition><CreateCV /></PageTransition></ProtectedRoute>} />
         <Route path="/create-cv" element={<ProtectedRoute><PageTransition><ExperienceLevelPage /></PageTransition></ProtectedRoute>} />
