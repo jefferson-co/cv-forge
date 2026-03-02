@@ -238,7 +238,7 @@ const ComparisonPage = () => {
             <CardContent className="p-4">
               <Badge variant="secondary" className="mb-4">Before</Badge>
               <ScrollArea className="h-[500px]">
-                <div className="font-mono text-sm whitespace-pre-wrap bg-white p-4 rounded border">
+                <div className="font-mono text-sm whitespace-pre-wrap bg-white text-gray-900 p-4 rounded border">
                   {generateCVText(data.originalCVContent)}
                 </div>
               </ScrollArea>
@@ -250,7 +250,7 @@ const ComparisonPage = () => {
             <CardContent className="p-4">
               <Badge className="mb-4 bg-green-500 text-white">After</Badge>
               <ScrollArea className="h-[500px]">
-                <div className="font-mono text-sm whitespace-pre-wrap bg-white p-4 rounded border">
+                <div className="font-mono text-sm whitespace-pre-wrap bg-white text-gray-900 p-4 rounded border">
                   {generateCVText(data.tailoredCVContent)}
                 </div>
               </ScrollArea>
@@ -285,17 +285,17 @@ const ComparisonPage = () => {
         </Card>
 
         {/* Action Bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t">
-          <Button variant="outline" onClick={() => navigate('/tailor-cv')} className="gap-2">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t">
+          <Button variant="outline" onClick={() => navigate('/tailor-cv')} className="w-full sm:w-auto gap-2">
             <ArrowLeft className="w-4 h-4" />
             Back
           </Button>
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={() => navigate('/tailor-cv/edit')} className="gap-2">
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <Button variant="outline" onClick={() => navigate('/tailor-cv/edit')} className="w-full sm:w-auto gap-2">
               <Pencil className="w-4 h-4" />
               Edit Manually
             </Button>
-            <Button onClick={() => navigate('/tailor-cv/country')} className="gap-2">
+            <Button onClick={() => navigate('/tailor-cv/country')} className="w-full sm:w-auto gap-2">
               <Check className="w-4 h-4" />
               Approve Changes
             </Button>
