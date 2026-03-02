@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
+import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CVFormProvider } from "@/contexts/CVFormContext";
 import { TailorCVProvider } from "@/contexts/TailorCVContext";
@@ -83,23 +84,25 @@ const AnimatedRoutes = () => {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <CVFormProvider>
-        <TailorCVProvider>
-          <ATSCheckProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <AnimatedRoutes />
-              </BrowserRouter>
-            </TooltipProvider>
-          </ATSCheckProvider>
-        </TailorCVProvider>
-      </CVFormProvider>
-    </AuthProvider>
-  </QueryClientProvider>
+  <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <CVFormProvider>
+          <TailorCVProvider>
+            <ATSCheckProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <AnimatedRoutes />
+                </BrowserRouter>
+              </TooltipProvider>
+            </ATSCheckProvider>
+          </TailorCVProvider>
+        </CVFormProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  </ThemeProvider>
 );
 
 export default App;
