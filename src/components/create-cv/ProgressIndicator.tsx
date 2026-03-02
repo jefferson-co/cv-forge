@@ -9,33 +9,43 @@ interface ProgressIndicatorProps {
 const ProgressIndicator = ({ currentStep, totalSteps, stepLabels }: ProgressIndicatorProps) => {
   return (
     <div className="mb-8">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium text-foreground">
-          Step {currentStep} of {totalSteps}: {stepLabels[currentStep - 1]}
-        </span>
-        <span className="text-sm text-muted-foreground">
-          {Math.round((currentStep / totalSteps) * 100)}% complete
-        </span>
+      <div className="flex items-center justify-center">
+        {Array.from({ length: totalSteps }, (_, i) => {
+          const step = i + 1;
+          const isCompleted = step < currentStep;
+          const isCurrent = step === currentStep;
+          const isActive = isCompleted || isCurrent;
+
+          return (
+            <div key={step} className="flex items-center">
+              {/* Step circle */}
+              <div
+                className={cn(
+                  "w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 border-2",
+                  isActive
+                    ? "bg-primary border-primary text-primary-foreground"
+                    : "bg-background border-muted-foreground/30 text-muted-foreground"
+                )}
+              >
+                {step}
+              </div>
+              {/* Connector line */}
+              {step < totalSteps && (
+                <div
+                  className={cn(
+                    "h-0.5 w-10 sm:w-16 transition-all duration-300",
+                    step < currentStep ? "bg-primary" : "bg-muted-foreground/20"
+                  )}
+                />
+              )}
+            </div>
+          );
+        })}
       </div>
-      <div className="h-2 bg-secondary rounded-full overflow-hidden">
-        <div 
-          className="h-full bg-primary transition-all duration-300"
-          style={{ width: `${(currentStep / totalSteps) * 100}%` }}
-        />
-      </div>
-      <div className="flex justify-between mt-2">
-        {stepLabels.map((label, index) => (
-          <div 
-            key={label}
-            className={cn(
-              "text-xs hidden sm:block",
-              index + 1 <= currentStep ? "text-primary" : "text-muted-foreground"
-            )}
-          >
-            {label}
-          </div>
-        ))}
-      </div>
+      {/* Step label below */}
+      <p className="text-center text-sm text-muted-foreground mt-3">
+        Step {currentStep}: {stepLabels[currentStep - 1]}
+      </p>
     </div>
   );
 };
