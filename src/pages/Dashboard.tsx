@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FileText, LogOut, User, ChevronDown, BarChart3, Clock, Calendar, Trash2 } from "lucide-react";
+import { Codepen, LogOut, User, ChevronDown, BarChart3, Clock, Calendar, Trash2, FileText, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -77,7 +77,6 @@ const Dashboard = () => {
           .order('updated_at', { ascending: false });
         
         if (!error && data) {
-          // Cast the content field properly
           const typedCvs: CV[] = data.map(cv => ({
             ...cv,
             content: cv.content as unknown as CVFormData | null,
@@ -139,7 +138,6 @@ const Dashboard = () => {
 
   const hasNoCvs = cvs.length === 0;
 
-  // Calculate stats
   const currentMonth = new Date().getMonth();
   const currentYear = new Date().getFullYear();
   const cvsThisMonth = cvs.filter(cv => {
@@ -156,31 +154,31 @@ const Dashboard = () => {
   if (loadingCvs) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-secondary/30">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/dashboard" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <FileText className="w-4 h-4 text-primary-foreground" />
+              <Codepen className="w-4 h-4 text-primary-foreground" />
             </div>
-            <span className="text-lg font-semibold text-foreground">Modiq</span>
+            <span className="text-lg font-semibold text-foreground font-display">Modiq</span>
           </Link>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center gap-2">
+              <Button variant="ghost" className="flex items-center gap-2 h-10">
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                   <User className="w-4 h-4 text-primary" />
                 </div>
-                <span className="hidden sm:inline text-sm text-foreground">{displayName}</span>
-                <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                <span className="hidden sm:inline text-sm font-medium text-foreground">{displayName}</span>
+                <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48">
@@ -194,88 +192,103 @@ const Dashboard = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="pt-24 pb-12 px-6">
+      <main className="pt-24 pb-16 px-6">
         <div className="container mx-auto max-w-6xl">
           {hasNoCvs ? (
             <EmptyState />
           ) : (
-            <div className="grid lg:grid-cols-3 gap-8">
-              {/* Main Content Area */}
-              <div className="lg:col-span-2">
-                {/* Welcome Header with Create Button */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10">
-                  <div>
-                    <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-                      Welcome back, {firstName}!
-                    </h1>
-                    <p className="text-lg text-muted-foreground">
-                      What would you like to do today?
-                    </p>
-                  </div>
-                  <CreateCVDropdown />
+            <>
+              {/* Welcome Header */}
+              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+                <div>
+                  <p className="text-sm font-medium text-primary mb-1">Dashboard</p>
+                  <h1 className="text-3xl md:text-4xl font-bold text-foreground font-display">
+                    Welcome back, {firstName}
+                  </h1>
                 </div>
+                <CreateCVDropdown />
+              </div>
 
-                {/* Recent CVs List */}
-                <div className="space-y-4">
-                  <h2 className="text-xl font-semibold text-foreground">Your CVs</h2>
-                  <div className="grid gap-4">
-                    {cvs.slice(0, 5).map((cv) => (
-                      <CVCard key={cv.id} cv={cv} onClick={() => handleCVClick(cv)} onDelete={(e) => handleDeleteClick(e, cv)} />
+              {/* Stats Row */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+                <StatCard
+                  icon={<FileText className="w-4 h-4" />}
+                  label="CVs this month"
+                  value={cvsThisMonth.toString()}
+                  accent={false}
+                />
+                <StatCard
+                  icon={<TrendingUp className="w-4 h-4" />}
+                  label="Avg. ATS score"
+                  value={avgAtsScore !== null ? `${avgAtsScore}%` : "—"}
+                  accent={avgAtsScore !== null && avgAtsScore >= 75}
+                />
+                <StatCard
+                  icon={<BarChart3 className="w-4 h-4" />}
+                  label="Jobs tailored"
+                  value={tailoredCount.toString()}
+                  accent={false}
+                />
+              </div>
+
+              <div className="grid lg:grid-cols-3 gap-8">
+                {/* CV List */}
+                <div className="lg:col-span-2">
+                  <div className="flex items-center justify-between mb-5">
+                    <h2 className="text-lg font-semibold text-foreground font-display">Your CVs</h2>
+                    <span className="text-xs text-muted-foreground">{cvs.length} total</span>
+                  </div>
+                  <div className="space-y-3">
+                    {cvs.slice(0, 5).map((cv, i) => (
+                      <CVCard
+                        key={cv.id}
+                        cv={cv}
+                        onClick={() => handleCVClick(cv)}
+                        onDelete={(e) => handleDeleteClick(e, cv)}
+                        index={i}
+                      />
                     ))}
                   </div>
                   {cvs.length > 5 && (
-                    <Button variant="outline" className="w-full">
+                    <Button variant="ghost" className="w-full mt-4 text-muted-foreground hover:text-foreground">
                       View all {cvs.length} CVs
                     </Button>
                   )}
                 </div>
-              </div>
 
-              {/* Sidebar */}
-              <div className="space-y-6">
-                {/* Quick Stats */}
-                <div className="bg-card rounded-xl border border-border p-6">
-                  <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-                    <BarChart3 className="w-4 h-4 text-primary" />
-                    Quick Stats
-                  </h3>
-                  <div className="space-y-4">
-                    <StatItem label="CVs created this month" value={cvsThisMonth.toString()} />
-                    <StatItem label="Average ATS score" value={avgAtsScore !== null ? `${avgAtsScore}%` : "—"} />
-                    <StatItem label="Jobs tailored" value={tailoredCount.toString()} />
+                {/* ATS Sidebar */}
+                <div>
+                  <div className="bg-card rounded-2xl border border-border p-6 shadow-sm">
+                    <h3 className="text-sm font-semibold text-foreground mb-5 flex items-center gap-2 font-display">
+                      <Clock className="w-4 h-4 text-primary" />
+                      ATS Score History
+                    </h3>
+                    {cvs.filter(cv => cv.ats_score !== null).length > 0 ? (
+                      <div className="space-y-4">
+                        {cvs.filter(cv => cv.ats_score !== null).slice(0, 4).map((cv) => (
+                          <div key={cv.id} className="flex items-center justify-between gap-3">
+                            <span className="text-sm text-muted-foreground truncate">{cv.title}</span>
+                            <ATSBadge score={cv.ats_score || 0} />
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mx-auto mb-3">
+                          <BarChart3 className="w-5 h-5 text-muted-foreground" />
+                        </div>
+                        <p className="text-sm text-muted-foreground">No ATS checks yet</p>
+                        <Link to="/ats-check">
+                          <Button variant="ghost" size="sm" className="mt-3 text-primary">
+                            Run your first check
+                          </Button>
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 </div>
-
-                {/* ATS Score History */}
-                <div className="bg-card rounded-xl border border-border p-6">
-                  <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-primary" />
-                    ATS Score History
-                  </h3>
-                  {cvs.filter(cv => cv.ats_score !== null).length > 0 ? (
-                    <div className="space-y-3">
-                      {cvs.filter(cv => cv.ats_score !== null).slice(0, 3).map((cv) => (
-                        <div key={cv.id} className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground truncate max-w-[150px]">{cv.title}</span>
-                          <span className={`text-sm font-semibold ${
-                            (cv.ats_score || 0) >= 80 ? 'text-green-600' : 
-                            (cv.ats_score || 0) >= 60 ? 'text-yellow-600' : 'text-red-600'
-                          }`}>
-                            {cv.ats_score}%
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-6">
-                      <p className="text-sm text-muted-foreground">
-                        No ATS checks yet
-                      </p>
-                    </div>
-                  )}
-                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
       </main>
@@ -311,7 +324,56 @@ const Dashboard = () => {
   );
 };
 
-const CVCard = ({ cv, onClick, onDelete }: { cv: CV; onClick: () => void; onDelete: (e: React.MouseEvent) => void }) => {
+/* ---------- Subcomponents ---------- */
+
+const StatCard = ({
+  icon,
+  label,
+  value,
+  accent,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  accent: boolean;
+}) => (
+  <div className="bg-card rounded-2xl border border-border p-5 shadow-sm hover:shadow-md transition-shadow duration-200">
+    <div className="flex items-center gap-2 mb-3">
+      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${accent ? 'bg-primary/10 text-primary' : 'bg-secondary text-muted-foreground'}`}>
+        {icon}
+      </div>
+    </div>
+    <p className={`text-2xl font-bold font-display ${accent ? 'text-primary' : 'text-foreground'}`}>{value}</p>
+    <p className="text-xs text-muted-foreground mt-1">{label}</p>
+  </div>
+);
+
+const ATSBadge = ({ score }: { score: number }) => {
+  const color =
+    score >= 80
+      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+      : score >= 60
+      ? "bg-amber-50 text-amber-700 border-amber-200"
+      : "bg-red-50 text-red-700 border-red-200";
+
+  return (
+    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${color}`}>
+      {score}%
+    </span>
+  );
+};
+
+const CVCard = ({
+  cv,
+  onClick,
+  onDelete,
+  index,
+}: {
+  cv: CV;
+  onClick: () => void;
+  onDelete: (e: React.MouseEvent) => void;
+  index: number;
+}) => {
   const typeLabels: Record<string, string> = {
     scratch: "From Scratch",
     tailored: "Tailored",
@@ -320,19 +382,20 @@ const CVCard = ({ cv, onClick, onDelete }: { cv: CV; onClick: () => void; onDele
   };
 
   return (
-    <div 
-      className="bg-card rounded-xl border border-border p-5 hover:border-primary/30 transition-colors cursor-pointer group"
+    <div
+      className="bg-card rounded-xl border border-border p-5 hover:border-primary/30 hover:shadow-md transition-all duration-200 cursor-pointer group animate-fade-up opacity-0"
+      style={{ animationDelay: `${index * 60}ms`, animationFillMode: "forwards" }}
       onClick={onClick}
     >
-      <div className="flex items-start justify-between">
-        <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4 min-w-0">
+          <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/15 transition-colors duration-200">
             <FileText className="w-5 h-5 text-primary" />
           </div>
-          <div>
-            <h3 className="font-semibold text-foreground">{cv.title}</h3>
+          <div className="min-w-0">
+            <h3 className="font-semibold text-foreground truncate">{cv.title}</h3>
             <div className="flex items-center gap-3 mt-1">
-              <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded">
+              <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">
                 {typeLabels[cv.type] || cv.type}
               </span>
               <span className="text-xs text-muted-foreground flex items-center gap-1">
@@ -342,19 +405,12 @@ const CVCard = ({ cv, onClick, onDelete }: { cv: CV; onClick: () => void; onDele
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          {cv.ats_score !== null && (
-            <div className={`text-sm font-semibold px-2 py-1 rounded ${
-              cv.ats_score >= 80 ? 'bg-green-100 text-green-700' : 
-              cv.ats_score >= 60 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'
-            }`}>
-              {cv.ats_score}% ATS
-            </div>
-          )}
+        <div className="flex items-center gap-2 flex-shrink-0 ml-4">
+          {cv.ats_score !== null && <ATSBadge score={cv.ats_score} />}
           <Button
             variant="ghost"
             size="icon"
-            className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+            className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive h-8 w-8"
             onClick={onDelete}
           >
             <Trash2 className="w-4 h-4" />
@@ -364,12 +420,5 @@ const CVCard = ({ cv, onClick, onDelete }: { cv: CV; onClick: () => void; onDele
     </div>
   );
 };
-
-const StatItem = ({ label, value }: { label: string; value: string }) => (
-  <div className="flex items-center justify-between">
-    <span className="text-sm text-muted-foreground">{label}</span>
-    <span className="text-sm font-semibold text-foreground">{value}</span>
-  </div>
-);
 
 export default Dashboard;
